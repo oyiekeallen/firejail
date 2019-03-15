@@ -2,6 +2,7 @@
 # This file is overwritten after every install/update
 # Persistent local customizations
 include palemoon.local
+
 # Persistent global definitions
 include globals.local
 

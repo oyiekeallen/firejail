@@ -26,6 +26,8 @@ include disable-xdg.inc
 
 include whitelist-var-common.inc
 
+#hostname=smi
+
 apparmor
 caps.drop all
 netfilter
@@ -44,3 +46,5 @@ private-tmp
 # breaks plugins
 #noexec ${HOME}
 noexec /tmp
+
+# VPN

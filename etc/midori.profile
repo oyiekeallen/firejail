@@ -38,6 +38,17 @@ whitelist ${HOME}/.pki
 whitelist ${HOME}/.local/share/pki
 include whitelist-common.inc
 
+apparmor
+
+nodbus
+nodvd
+nogroups
+nonewprivs
+noroot
+notv
+
+shell none
+
 caps.drop all
 netfilter
 nodvd
@@ -49,3 +60,5 @@ seccomp
 tracelog
 
 disable-mnt
+private-tmp
+private-cache
