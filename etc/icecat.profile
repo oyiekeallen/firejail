@@ -14,7 +14,9 @@ whitelist ${HOME}/.cache/mozilla/icecat
 whitelist ${HOME}/.mozilla
 
 # private-etc must first be enabled in firefox-common.profile
-#private-etc icecat
+private-etc icecat
+private-bin icecat
+private-opt icecat
 
 # Redirect
 include firefox-common.profile

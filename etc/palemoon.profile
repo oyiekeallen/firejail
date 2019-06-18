@@ -18,10 +18,10 @@ whitelist ${HOME}/.moonchild productions
 ignore seccomp.drop
 seccomp
 
-#private-bin palemoon
+private-bin palemoon
 # private-etc must first be enabled in firefox-common.profile
-#private-etc palemoon
-#private-opt palemoon
+private-etc palemoon
+private-opt palemoon
 
 # Redirect
 include firefox-common.profile
