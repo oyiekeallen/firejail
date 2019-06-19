@@ -10,13 +10,17 @@ noblacklist ${HOME}/.config/gpicview
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
 include whitelist-var-common.inc
 
+apparmor
 caps.drop all
+ipc-namespace
+machine-id
 net none
 nodbus
 nodvd
@@ -33,7 +37,10 @@ shell none
 tracelog
 
 private-bin gpicview
+private-cache
 private-dev
-private-etc fonts
+private-etc alternatives,fonts,group,passwd
 private-lib
 private-tmp
+
+memory-deny-write-execute

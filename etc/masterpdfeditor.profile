@@ -11,18 +11,16 @@ noblacklist ${HOME}/.masterpdfeditor
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
 include whitelist-var-common.inc
 
+apparmor
 caps.drop all
-ipc-namespace
 machine-id
-net none
-no3d
-nodbus
 nodvd
 nogroups
 nonewprivs
@@ -36,15 +34,8 @@ seccomp
 shell none
 tracelog
 
-# disable-mnt
-# private
-private-bin masterpdfeditor*
 private-cache
 private-dev
-private-etc fonts
-# private-lib
+private-etc alternatives,fonts
 private-tmp
 
-# memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

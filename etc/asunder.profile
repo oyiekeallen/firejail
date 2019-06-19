@@ -14,6 +14,7 @@ noblacklist ${MUSIC}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -33,11 +34,8 @@ protocol unix,inet,inet6
 seccomp
 shell none
 
-#private-bin vlc,cvlc,nvlc,rvlc,qvlc,svlc
 private-dev
 private-tmp
 
 # mdwe is disabled due to breaking hardware accelerated decoding
 # memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

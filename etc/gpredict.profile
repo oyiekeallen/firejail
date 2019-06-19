@@ -10,10 +10,12 @@ noblacklist ${HOME}/.config/Gpredict
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+mkdir ${HOME}/.config/Gpredict
 whitelist ${HOME}/.config/Gpredict
 include whitelist-common.inc
 
@@ -33,8 +35,6 @@ tracelog
 
 private-bin gpredict
 private-dev
-private-etc fonts,resolv.conf,ca-certificates,ssl,pki,crypto-policies
+private-etc alternatives,ca-certificates,crypto-policies,fonts,pki,resolv.conf,ssl
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

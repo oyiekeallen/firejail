@@ -5,15 +5,16 @@ include ricochet.local
 # Persistent global definitions
 include globals.local
 
-
 noblacklist ${HOME}/.local/share/Ricochet
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+mkdir ${HOME}/.local/share/Ricochet
 whitelist ${DOWNLOADS}
 whitelist ${HOME}/.local/share/Ricochet
 include whitelist-common.inc
@@ -36,7 +37,5 @@ shell none
 disable-mnt
 private-bin ricochet,tor
 private-dev
-#private-etc fonts,tor,X11,alternatives,ca-certificates,ssl,pki,crypto-policies
+#private-etc alternatives,alternatives,ca-certificates,crypto-policies,fonts,pki,ssl,tor,X11
 
-noexec ${HOME}
-noexec /tmp

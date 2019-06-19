@@ -10,12 +10,16 @@ noblacklist ${PICTURES}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-xdg.inc
 
+apparmor
 caps.drop all
+ipc-namespace
+machine-id
 net none
 nodbus
 nodvd
@@ -34,5 +38,6 @@ tracelog
 # private-bin img2txt
 private-cache
 private-dev
-# private-etc none
 private-tmp
+
+memory-deny-write-execute

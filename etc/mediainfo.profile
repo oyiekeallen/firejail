@@ -6,15 +6,17 @@ include mediainfo.local
 # Persistent global definitions
 include globals.local
 
-blacklist /tmp/.X11-unix
-
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+apparmor
 caps.drop all
+ipc-namespace
+machine-id
 net none
 no3d
 nodbus
@@ -30,9 +32,12 @@ protocol unix
 seccomp
 shell none
 tracelog
+x11 none
 
 private-bin mediainfo
 private-cache
 private-dev
-private-etc none
+private-etc alternatives
 private-tmp
+
+memory-deny-write-execute

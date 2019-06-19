@@ -1,5 +1,5 @@
 # Firejail profile for transmission-qt
-# Description: Lightweight BitTorrent client
+# Description: Fast, easy and free BitTorrent client (Qt GUI)
 # This file is overwritten after every install/update
 # Persistent local customizations
 include transmission-qt.local
@@ -11,13 +11,14 @@ noblacklist ${HOME}/.config/transmission
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
 mkdir ${HOME}/.cache/transmission
 mkdir ${HOME}/.config/transmission
-whitelist  ${DOWNLOADS}
+whitelist ${DOWNLOADS}
 whitelist ${HOME}/.cache/transmission
 whitelist ${HOME}/.config/transmission
 include whitelist-common.inc

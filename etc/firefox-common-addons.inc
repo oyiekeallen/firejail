@@ -43,8 +43,10 @@ whitelist ${HOME}/.lastpass
 whitelist ${HOME}/.local/share/kget
 whitelist ${HOME}/.local/share/okular
 whitelist ${HOME}/.local/share/qpdfview
+whitelist ${HOME}/.local/share/tridactyl
 whitelist ${HOME}/.pentadactyl
 whitelist ${HOME}/.pentadactylrc
+whitelist ${HOME}/.tridactylrc
 whitelist ${HOME}/.vimperator
 whitelist ${HOME}/.vimperatorrc
 whitelist ${HOME}/.wine-pipelight
@@ -56,8 +58,7 @@ whitelist ${HOME}/dwhelper
 noblacklist ${HOME}/.local/share/gnome-shell
 whitelist ${HOME}/.local/share/gnome-shell
 ignore nodbus
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python3*
+include allow-python3.inc
 
 # Flash plugin
 # private-etc must first be enabled in firefox-common.profile and in profiles including it.

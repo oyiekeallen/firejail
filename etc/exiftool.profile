@@ -6,20 +6,20 @@ include exiftool.local
 # Persistent global definitions
 include globals.local
 
-blacklist /tmp/.X11-unix
-
-# Allow access to perl
-noblacklist ${PATH}/perl
-noblacklist /usr/lib/perl*
-noblacklist /usr/share/perl*
+# Allow perl (blacklisted by disable-interpreters.inc)
+include allow-perl.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+apparmor
 caps.drop all
+ipc-namespace
+machine-id
 net none
 no3d
 nodbus
@@ -35,9 +35,14 @@ protocol unix
 seccomp
 shell none
 tracelog
+x11 none
 
-# private-bin exiftool,perl
+# To support exiftool in private-bin on Arch Linux (and derivatives), symlink /usr/bin/vendor_perl/exiftool to /usr/bin/exiftool and uncomment the below.
+# Users on non-Arch Linux distributions can safely uncomment (or put in exiftool.local) the line below to enable extra hardening.
+#private-bin exiftool,perl
 private-cache
 private-dev
-private-etc none
+private-etc alternatives
 private-tmp
+
+memory-deny-write-execute

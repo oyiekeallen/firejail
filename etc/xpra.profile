@@ -8,19 +8,15 @@ include globals.local
 
 #
 # This profile will sandbox Xpra server itself when used with firejail --x11=xpra.
-# To enable it, create a firejail-xpra  symlink in /usr/local/bin:
+# To enable it, create a firejail-xpra symlink in /usr/local/bin:
 #
 #    $ sudo ln -s /usr/bin/firejail /usr/local/bin/xpra
 #
 # or run "sudo firecfg"
 
-blacklist /media
-
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include allow-python2.inc
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
@@ -47,10 +43,11 @@ protocol unix
 seccomp
 shell none
 
+disable-mnt
 # private home directory doesn't work on some distros, so we go for a regular home
 # private
 # older Xpra versions also use Xvfb
-# private-bin xpra,python*,Xvfb,Xorg,sh,xkbcomp,xauth,dbus-launch,pactl,ldconfig,which,strace,bash,cat,ls
+# private-bin bash,cat,dbus-launch,ldconfig,ls,pactl,python*,sh,strace,which,xauth,xkbcomp,Xorg,xpra,Xvfb
 private-dev
-# private-etc ld.so.conf,ld.so.cache,resolv.conf,host.conf,nsswitch.conf,gai.conf,hosts,hostname,machine-id,xpra,X11
+# private-etc alternatives,gai.conf,host.conf,hostname,hosts,ld.so.cache,ld.so.conf,machine-id,nsswitch.conf,resolv.conf,X11,xpra
 private-tmp

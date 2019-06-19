@@ -12,8 +12,13 @@ noblacklist ${HOME}/.inkscape
 noblacklist ${DOCUMENTS}
 noblacklist ${PICTURES}
 
+# Allow python (blacklisted by disable-interpreters.inc)
+include allow-python2.inc
+include allow-python3.inc
+
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -23,6 +28,8 @@ include whitelist-var-common.inc
 
 apparmor
 caps.drop all
+ipc-namespace
+machine-id
 net none
 nodbus
 nodvd
@@ -36,10 +43,11 @@ novideo
 protocol unix
 seccomp
 shell none
+tracelog
 
-# private-bin inkscape,potrace - problems on Debian stretch
+# private-bin inkscape,potrace,python* - problems on Debian stretch
+private-cache
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp
+# memory-deny-write-execute

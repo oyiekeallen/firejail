@@ -29,7 +29,11 @@
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <sys/wait.h>
+
 #include <fcntl.h>
+#ifndef O_PATH
+# define O_PATH 010000000
+#endif
 
 #define MAX_GROUPS 1024
 #define MAXBUF 4098
@@ -119,12 +123,12 @@ clean_all:
 // drop privileges
 // - for root group or if nogroups is set, supplementary groups are not configured
 void drop_privs(int nogroups) {
-	EUID_ROOT();
 	gid_t gid = getgid();
 	if (arg_debug)
 		printf("Drop privileges: pid %d, uid %d, gid %d, nogroups %d\n",  getpid(), getuid(), gid, nogroups);
 
 	// configure supplementary groups
+	EUID_ROOT();
 	if (gid == 0 || nogroups) {
 		if (setgroups(0, NULL) < 0)
 			errExit("setgroups");
@@ -135,10 +139,10 @@ void drop_privs(int nogroups) {
 		clean_supplementary_groups(gid);
 
 	// set uid/gid
-	if (setgid(getgid()) < 0)
-		errExit("setgid/getgid");
-	if (setuid(getuid()) < 0)
-		errExit("setuid/getuid");
+	if (setresgid(-1, getgid(), getgid()) != 0)
+		errExit("setresgid");
+	if (setresuid(-1, getuid(), getuid()) != 0)
+		errExit("setresuid");
 }
 
 
@@ -249,6 +253,16 @@ void logerr(const char *msg) {
 	syslog(LOG_ERR, "%s\n", msg);
 	closelog();
 }
+
+
+void set_nice(int inc) {
+	errno = 0;
+	int rv = nice(inc);
+	(void) rv;
+	if (errno)
+		fwarning("cannot set nice value\n");
+}
+
 
 static int copy_file_by_fd(int src, int dst) {
 	assert(src >= 0);
@@ -1163,11 +1177,6 @@ int safe_fd(const char *path, int flags) {
 	char *tok = strtok(dup, "/");
 	assert(tok);
 	while (tok) {
-		// skip all "/./"
-		if (strcmp(tok, ".") == 0) {
-			tok = strtok(NULL, "/");
-			continue;
-		}
 		// open the element, assuming it is a directory; this fails with ENOTDIR if it is a symbolic link
 		fd = openat(parentfd, tok, O_PATH|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);
 		if (fd == -1) {
@@ -1267,7 +1276,7 @@ int invalid_sandbox(const pid_t pid) {
 }
 
 int has_handler(pid_t pid, int signal) {
-	if (signal > 0) {
+	if (signal > 0 && signal <= SIGRTMAX) {
 		char *fname;
 		if (asprintf(&fname, "/proc/%d/status", pid) == -1)
 			errExit("asprintf");

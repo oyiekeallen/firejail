@@ -8,6 +8,9 @@ include globals.local
 
 noblacklist ${HOME}/.frozen-bubble
 
+# Allow perl (blacklisted by disable-interpreters.inc)
+include allow-perl.inc
+
 include disable-common.inc
 include disable-devel.inc
 include disable-interpreters.inc
@@ -35,5 +38,4 @@ shell none
 disable-mnt
 # private-bin frozen-bubble
 private-dev
-# private-etc none
 private-tmp

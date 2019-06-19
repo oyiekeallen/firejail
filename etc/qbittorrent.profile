@@ -12,21 +12,21 @@ noblacklist ${HOME}/.config/qBittorrentrc
 noblacklist ${HOME}/.local/share/data/qBittorrent
 
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include allow-python2.inc
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
 mkdir ${HOME}/.cache/qBittorrent
 mkdir ${HOME}/.config/qBittorrent
+mkfile ${HOME}/.config/qBittorrentrc
 mkdir ${HOME}/.local/share/data/qBittorrent
-whitelist  ${DOWNLOADS}
+whitelist ${DOWNLOADS}
 whitelist ${HOME}/.cache/qBittorrent
 whitelist ${HOME}/.config/qBittorrent
 whitelist ${HOME}/.config/qBittorrentrc
@@ -51,12 +51,9 @@ protocol unix,inet,inet6,netlink
 seccomp
 shell none
 
-private-bin qbittorrent,python*
+private-bin python*,qbittorrent
 private-dev
-# private-etc X11,fonts,xdg,resolv.conf,ca-certificates,ssl,pki,crypto-policies
-# private-lib - problems on Arch
+# private-etc alternatives,ca-certificates,crypto-policies,fonts,pki,resolv.conf,ssl,X11,xdg
 private-tmp
 
-# memory-deny-write-execute - problems on  Arch, see #1690 on GitHub repo
-noexec ${HOME}
-noexec /tmp
+# memory-deny-write-execute - problems on Arch, see #1690 on GitHub repo

@@ -11,6 +11,7 @@ noblacklist ${VIDEOS}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -33,10 +34,8 @@ seccomp
 shell none
 
 # private-bin breaks gif mode, mp4 and webm mode work fine however
-# private-bin peek,convert,ffmpeg
+# private-bin convert,ffmpeg,peek
 private-dev
 private-tmp
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

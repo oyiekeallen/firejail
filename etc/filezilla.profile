@@ -10,10 +10,8 @@ noblacklist ${HOME}/.config/filezilla
 noblacklist ${HOME}/.filezilla
 
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include allow-python2.inc
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
@@ -34,6 +32,7 @@ protocol unix,inet,inet6
 seccomp
 shell none
 
-private-bin filezilla,uname,sh,bash,python*,lsb_release,fzputtygen,fzsftp
+# private-bin breaks --join if the user has zsh set as $SHELL - adding zsh on private-bin
+private-bin bash,filezilla,fzputtygen,fzsftp,lsb_release,python*,sh,uname,zsh
 private-dev
 private-tmp

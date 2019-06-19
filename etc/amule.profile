@@ -6,15 +6,16 @@ include amule.local
 # Persistent global definitions
 include globals.local
 
-
 noblacklist ${HOME}/.aMule
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+mkdir ${HOME}/.aMule
 whitelist ${DOWNLOADS}
 whitelist ${HOME}/.aMule
 include whitelist-common.inc
@@ -39,5 +40,3 @@ private-bin amule
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

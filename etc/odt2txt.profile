@@ -8,8 +8,6 @@ include globals.local
 
 noblacklist ${DOCUMENTS}
 
-blacklist /tmp/.X11-unix
-
 include disable-common.inc
 include disable-devel.inc
 include disable-interpreters.inc
@@ -33,10 +31,11 @@ protocol unix
 seccomp
 shell none
 tracelog
+x11 none
 
 private-bin odt2txt
 private-cache
 private-dev
-private-etc none
+private-etc alternatives
 private-tmp
 read-only ${HOME}

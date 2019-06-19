@@ -12,6 +12,7 @@ noblacklist ${HOME}/.kde4/share/config/konversationrc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -33,11 +34,9 @@ seccomp
 shell none
 tracelog
 
-private-bin konversation,kbuildsycoca4
+private-bin kbuildsycoca4,konversation
 private-cache
 private-dev
 private-tmp
 
 # memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

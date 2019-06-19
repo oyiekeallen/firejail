@@ -6,19 +6,17 @@ include libreoffice.local
 # Persistent global definitions
 include globals.local
 
-noblacklist ${HOME}/.java
 noblacklist /usr/local/sbin
 noblacklist ${HOME}/.config/libreoffice
 
-# libreoffice uses java; if you don't care about java functionality,
-# comment the next four lines
-noblacklist ${PATH}/java
-noblacklist /usr/lib/java
-noblacklist /etc/java
-noblacklist /usr/share/java
+# libreoffice uses java for some certain operations
+# comment if you don't care about java functionality
+# Allow java (blacklisted by disable-devel.inc)
+include allow-java.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
@@ -28,9 +26,7 @@ include whitelist-var-common.inc
 # comment the next line to use the ubuntu profile instead of firejail's apparmor profile
 apparmor
 caps.drop all
-#machine-id
 netfilter
-#nodbus
 nodvd
 nogroups
 # comment nonewprivs when using the ubuntu 18.04/debian 10 apparmor profile
@@ -48,8 +44,5 @@ tracelog
 
 private-dev
 private-tmp
-
-noexec ${HOME}
-noexec /tmp
 
 join-or-start libreoffice

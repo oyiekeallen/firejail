@@ -10,17 +10,18 @@ noblacklist ${HOME}/.conkeror.mozdev.org
 include disable-common.inc
 include disable-programs.inc
 
+mkdir ${HOME}/.conkeror.mozdev.org
+mkfile ${HOME}/.conkerorrc
 whitelist ${HOME}/.conkeror.mozdev.org
 whitelist ${HOME}/.conkerorrc
-whitelist ${HOME}/.gtkrc-2.0
 whitelist ${HOME}/.lastpass
 whitelist ${HOME}/.pentadactyl
 whitelist ${HOME}/.pentadactylrc
 whitelist ${HOME}/.vimperator
 whitelist ${HOME}/.vimperatorrc
 whitelist ${HOME}/.zotero
-whitelist ${HOME}/Downloads
 whitelist ${HOME}/dwhelper
+whitelist ${DOWNLOADS}
 include whitelist-common.inc
 
 caps.drop all

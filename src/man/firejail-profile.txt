@@ -74,6 +74,9 @@ Child process initialized
 [...]
 .RE
 
+.SH Templates
+Templates for writing own profiles can be found in /usr/share/doc/firejail.
+
 .SH Scripting
 Scripting commands:
 
@@ -94,7 +97,7 @@ Example: "?HAS_APPIMAGE: whitelist ${HOME}/special/appimage/dir"
 
 This example will load the whitelist profile line only if the \-\-appimage option has been specified on the command line.
 
-Currently the only conditionals supported are HAS_APPIMAGE, HAS_NODBUS and BROWSER_DISABLE_U2F.
+Currently the only conditionals supported are HAS_APPIMAGE, HAS_NODBUS, BROWSER_DISABLE_U2F, and BROWSER_ALLOW_DRM.
 
 The profile line may be any profile line that you would normally use in a profile \fBexcept\fR for "quiet" and "include" lines.
 
@@ -259,8 +262,9 @@ Build a new /bin in a temporary filesystem, and copy the programs in the list.
 The same directory is also bind-mounted over /sbin, /usr/bin and /usr/sbin.
 .TP
 \fBprivate-dev
-Create a new /dev directory. Only disc, dri, null, full, zero, tty, pts, ptmx,
-random, snd, urandom, video, log and shm devices are available.
+Create a new /dev directory. Only disc, dri, dvb, hidraw, null, full, zero, tty, pts, ptmx,
+random, snd, urandom, video, log, shm and usb devices are available.
+Use the options no3d, nodvd, nosound, notv, nou2f and novideo for additional restrictions.
 .TP
 \fBkeep-dev-shm
 /dev/shm directory is untouched (even with private-dev).
@@ -286,6 +290,12 @@ All modifications are discarded when the sandbox is closed.
 .TP
 \fBprivate-tmp
 Mount an empty temporary filesystem on top of /tmp directory whitelisting /tmp/.X11-unix.
+.TP
+\fBprivate-cwd
+Set working directory inside jail to the home directory, and failing that, the root directory.
+.TP
+\fBprivate-cwd directory
+Set working directory inside the jail.
 .TP
 \fBread-only file_or_directory
 Make directory or file read-only.
@@ -659,6 +669,10 @@ instead of the default one.
 \fBjoin-or-start sandboxname
 Join the sandbox identified by name or start a new one.
 Same as "firejail --join=sandboxname" command if sandbox with specified name exists, otherwise same as "name sandboxname".
+
+.TP
+\fBdeterministic-exit-code
+Always exit firejail with the first child's exit status. The default behavior is to use the exit status of the final child to exit, which can be nondeterministic.
 
 .SH FILES
 /etc/firejail/filename.profile, $HOME/.config/firejail/filename.profile

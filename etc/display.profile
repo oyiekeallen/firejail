@@ -8,13 +8,12 @@ include globals.local
 noblacklist ${PICTURES}
 
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include allow-python2.inc
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -39,5 +38,6 @@ shell none
 
 private-bin display,python*
 private-dev
-# private-etc none - on Debian-based systems display is a symlink in /etc/alternatives
+# On Debian-based systems, display is a symlink in /etc/alternatives
+private-etc alternatives
 private-tmp

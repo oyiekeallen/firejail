@@ -23,11 +23,11 @@ nonewprivs
 noroot
 notv
 nou2f
-protocol unix,netlink,inet,inet6
+protocol unix,inet,inet6,netlink
 seccomp
 shell none
 
 # private-bin unknown-horizons
 private-dev
-# private-etc ca-certificates,ssl,pki,crypto-policies
+# private-etc alternatives,ca-certificates,crypto-policies,pki,ssl
 private-tmp

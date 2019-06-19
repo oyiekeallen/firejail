@@ -20,6 +20,7 @@ noblacklist ${DOCUMENTS}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -46,13 +47,11 @@ seccomp
 shell none
 tracelog
 
-private-bin okular,kbuildsycoca4,kdeinit4,lpr
+private-bin kbuildsycoca4,kdeinit4,lpr,okular
 private-dev
 private-etc alternatives,cups,fonts,kde4rc,kde5rc,ld.so.cache,machine-id,xdg
 # private-tmp - on KDE we need access to the real /tmp for data exchange with email clients
 
 # memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp
 
 join-or-start okular

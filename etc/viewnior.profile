@@ -6,18 +6,20 @@ include viewnior.local
 # Persistent global definitions
 include globals.local
 
-blacklist ${HOME}/.bashrc
-
 noblacklist ${HOME}/.Steam
 noblacklist ${HOME}/.config/viewnior
 noblacklist ${HOME}/.steam
 
+blacklist ${HOME}/.bashrc
+
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+apparmor
 caps.drop all
 net none
 no3d
@@ -38,10 +40,7 @@ tracelog
 private-bin viewnior
 private-cache
 private-dev
-private-etc fonts
+private-etc alternatives,fonts,machine-id
 private-tmp
 
-# memory-deny-write-executes breaks on Arch - see issue #1808
-#memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp
+#memory-deny-write-execute - breaks on Arch (see issues #1803 and #1808)

@@ -5,24 +5,36 @@ quiet
 # Persistent local customizations
 include uudeview.local
 # Persistent global definitions
-# added by included default.profile
-#include globals.local
+include globals.local
 
+include disable-common.inc
+include disable-devel.inc
+include disable-exec.inc
+include disable-interpreters.inc
+include disable-passwdmgr.inc
+include disable-programs.inc
+
+caps.drop all
 hostname uudeview
-ignore noroot
+ipc-namespace
+machine-id
 net none
 nodbus
 nodvd
+#nogroups
+nonewprivs
+#noroot
 nosound
 notv
 nou2f
 novideo
+protocol unix
+seccomp
 shell none
 tracelog
+x11 none
 
 private-bin uudeview
 private-cache
 private-dev
-private-etc ld.so.preload
-
-include default.profile
+private-etc alternatives,ld.so.preload

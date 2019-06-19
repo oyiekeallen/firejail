@@ -10,26 +10,27 @@ noblacklist ${HOME}/.cache/gajim
 noblacklist ${HOME}/.config/gajim
 noblacklist ${HOME}/.local/share/gajim
 
-# Allow Python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python3*
-noblacklist /usr/lib64/python3*
+# Allow python (blacklisted by disable-interpreters.inc)
+#include allow-python2.inc
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
+include disable-xdg.inc
 
 mkdir ${HOME}/.cache/gajim
 mkdir ${HOME}/.config/gajim
 mkdir ${HOME}/.local/share/gajim
-mkdir ${HOME}/Downloads
 whitelist ${HOME}/.cache/gajim
 whitelist ${HOME}/.config/gajim
 whitelist ${HOME}/.local/share/gajim
-whitelist ${HOME}/Downloads
+whitelist ${DOWNLOADS}
 include whitelist-common.inc
+include whitelist-var-common.inc
 
 caps.drop all
 netfilter
@@ -39,16 +40,15 @@ nonewprivs
 noroot
 notv
 nou2f
-protocol unix,inet,inet6
+protocol unix,inet,inet6,netlink
 seccomp
 shell none
 tracelog
 
 disable-mnt
-private-bin python,python3,sh,gpg,gpg2,gajim,bash,zsh,paplay,gajim-history-manager
+private-bin bash,gajim,gajim-history-manager,gpg,gpg2,paplay,python,python3,sh,zsh
 private-dev
-private-etc alsa,asound.conf,ca-certificates,crypto-policies,fonts,group,hostname,hosts,ld.so.cache,ld.so.conf,localtime,machine-id,passwd,pki,pulse,resolv.conf,ssl
+private-etc alsa,alternatives,asound.conf,ca-certificates,crypto-policies,fonts,group,hostname,hosts,ld.so.cache,ld.so.conf,localtime,machine-id,passwd,pki,pulse,resolv.conf,ssl
 private-tmp
 
-noexec ${HOME}
-noexec /tmp
+join-or-start gajim

@@ -5,17 +5,16 @@ include terasology.local
 # Persistent global definitions
 include globals.local
 
-noblacklist ${HOME}/.java
+ignore noexec /tmp
+
 noblacklist ${HOME}/.local/share/terasology
 
-# Allow access to java
-noblacklist ${PATH}/java
-noblacklist /usr/lib/java
-noblacklist /etc/java
-noblacklist /usr/share/java
+# Allow java (blacklisted by disable-devel.inc)
+include allow-java.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -44,7 +43,5 @@ shell none
 
 disable-mnt
 private-dev
-private-etc asound.conf,ca-certificates,dbus-1,drirc,fonts,group,gtk-2.0,gtk-3.0,host.conf,hostname,hosts,ld.so.cache,ld.so.preload,localtime,lsb-release,machine-id,mime.types,passwd,pulse,resolv.conf,ssl,java-8-openjdk,java-7-openjdk,pki,crypto-policies
+private-etc alternatives,asound.conf,ca-certificates,crypto-policies,dbus-1,drirc,fonts,group,gtk-2.0,gtk-3.0,host.conf,hostname,hosts,java-7-openjdk,java-8-openjdk,ld.so.cache,ld.so.preload,localtime,lsb-release,machine-id,mime.types,passwd,pki,pulse,resolv.conf,ssl
 private-tmp
-
-noexec ${HOME}

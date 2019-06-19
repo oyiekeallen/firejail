@@ -6,12 +6,15 @@ include gitg.local
 # Persistent global definitions
 include globals.local
 
+noblacklist ${HOME}/.config/git
 noblacklist ${HOME}/.gitconfig
+noblacklist ${HOME}/.git-credentials
 noblacklist ${HOME}/.local/share/gitg
 noblacklist ${HOME}/.ssh
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -32,12 +35,10 @@ protocol unix,inet,inet6
 seccomp
 shell none
 
-private-bin gitg,git,ssh
+private-bin git,gitg,ssh
 private-cache
 private-dev
 private-tmp
 
 # mdwe breaks diff in older versions
 #memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

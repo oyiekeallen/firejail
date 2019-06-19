@@ -10,10 +10,12 @@ noblacklist ${HOME}/.surf
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
 mkdir ${HOME}/.surf
+whitelist ${HOME}/.surf
 whitelist ${DOWNLOADS}
 include whitelist-common.inc
 
@@ -30,10 +32,8 @@ shell none
 tracelog
 
 disable-mnt
-private-bin ls,surf,sh,bash,curl,dmenu,printf,sed,sleep,st,stterm,xargs,xprop
+private-bin bash,curl,dmenu,ls,printf,sed,sh,sleep,st,stterm,surf,xargs,xprop
 private-dev
-private-etc passwd,group,hosts,resolv.conf,fonts,ssl,pki,ca-certificates,crypto-policies
+private-etc alternatives,ca-certificates,crypto-policies,fonts,group,hosts,passwd,pki,resolv.conf,ssl
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

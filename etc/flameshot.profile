@@ -1,6 +1,7 @@
 # Firejail profile for flameshot
 # Description: Powerful yet simple-to-use screenshot software
 # This file is overwritten after every install/update
+quiet
 # Persistent local customizations
 include flameshot.local
 # Persistent global definitions
@@ -10,6 +11,7 @@ noblacklist ${PICTURES}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -35,9 +37,7 @@ shell none
 disable-mnt
 private-bin flameshot
 private-cache
-private-etc fonts,ld.so.conf,resolv.conf,ca-certificates,ssl,pki,crypto-policies
+private-etc alternatives,ca-certificates,crypto-policies,fonts,ld.so.conf,pki,resolv.conf,ssl
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

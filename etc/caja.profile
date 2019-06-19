@@ -14,10 +14,8 @@ noblacklist ${HOME}/.local/share/Trash
 # noblacklist ${HOME}/.local/share/caja-python
 
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include allow-python2.inc
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
@@ -41,5 +39,4 @@ tracelog
 # caja needs to be able to start arbitrary applications so we cannot blacklist their files
 # private-bin caja
 # private-dev
-# private-etc fonts
 # private-tmp

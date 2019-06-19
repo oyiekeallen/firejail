@@ -12,16 +12,13 @@ noblacklist ${PICTURES}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-xdg.inc
 
 #mkdir ${HOME}/.config/ghostwriter
-#mkdir ${DESKTOP}
-#mkdir ${DOCUMENTS}
-#mkdir ${DOWNLOADS}
-#mkdir ${PICTURES}
 #whitelist ${HOME}/.config/ghostwriter
 #whitelist ${DESKTOP}
 #whitelist ${DOCUMENTS}
@@ -52,10 +49,8 @@ tracelog
 #private-bin ghostwriter,pandoc
 private-cache
 private-dev
-private-etc cups,crypto-policies,localtime,drirc,fonts,gtk-3.0,dconf,machine-id
+private-etc alternatives,crypto-policies,cups,dconf,drirc,fonts,gtk-3.0,localtime,machine-id
 # Breaks Translation
 #private-lib
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

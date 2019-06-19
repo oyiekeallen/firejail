@@ -9,13 +9,14 @@ noblacklist ${HOME}/.local/share/dino
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
 mkdir ${HOME}/.local/share/dino
 whitelist ${HOME}/.local/share/dino
-whitelist ${HOME}/Downloads
+whitelist ${DOWNLOADS}
 include whitelist-common.inc
 
 caps.drop all
@@ -36,8 +37,6 @@ shell none
 disable-mnt
 private-bin dino
 private-dev
-# private-etc fonts,ca-certificates,ssl,pki,crypto-policies # breaks server connection
+# private-etc alternatives,ca-certificates,crypto-policies,fonts,pki,ssl -- breaks server connection
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

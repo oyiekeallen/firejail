@@ -7,19 +7,24 @@ include dig.local
 # Persistent global definitions
 include globals.local
 
+noblacklist ${HOME}/.digrc
+
 include disable-common.inc
 # include disable-devel.inc
+include disable-exec.inc
 # include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
-#include disable-xdg.inc
+include disable-xdg.inc
 
+#mkfile ${HOME}/.digrc -- see #903
 whitelist ${HOME}/.digrc
 include whitelist-common.inc
 include whitelist-var-common.inc
 
 caps.drop all
 # ipc-namespace
+machine-id
 netfilter
 no3d
 nodbus
@@ -37,13 +42,10 @@ shell none
 
 disable-mnt
 private
-private-bin sh,bash,dig
+private-bin bash,dig,sh
 private-cache
 private-dev
-# private-etc resolv.conf
 private-lib
 private-tmp
 
 memory-deny-write-execute
-# noexec ${HOME}
-# noexec /tmp

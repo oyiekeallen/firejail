@@ -5,12 +5,16 @@ include gcloud.local
 # Persistent global definitions
 include globals.local
 
+# noexec ${HOME} will break user-local installs of gcloud tooling
+ignore noexec ${HOME}
+
 noblacklist ${HOME}/.boto
 noblacklist ${HOME}/.config/gcloud
 noblacklist /var/run/docker.sock
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-programs.inc
 
 apparmor
@@ -32,10 +36,5 @@ tracelog
 
 disable-mnt
 private-dev
-private-etc ca-certificates,ssl,hosts,localtime,nsswitch.conf,resolv.conf,pki,crypto-policies,ld.so.cache
+private-etc alternatives,ca-certificates,crypto-policies,hosts,ld.so.cache,localtime,nsswitch.conf,pki,resolv.conf,ssl
 private-tmp
-
-noexec /tmp
-
-# will break user-local installs of gcloud tooling
-# noexec ${HOME}

@@ -10,9 +10,11 @@ noblacklist ${HOME}/.config/galculator
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
+include disable-xdg.inc
 
 mkdir ${HOME}/.config/galculator
 whitelist ${HOME}/.config/galculator
@@ -21,6 +23,8 @@ include whitelist-var-common.inc
 
 apparmor
 caps.drop all
+#hostname galculator - breaks Arch Linux
+ipc-namespace
 net none
 nodbus
 nodvd
@@ -37,7 +41,10 @@ shell none
 tracelog
 
 private-bin galculator
+private-cache
 private-dev
-private-etc fonts
+private-etc alternatives,fonts
 private-lib
 private-tmp
+
+memory-deny-write-execute

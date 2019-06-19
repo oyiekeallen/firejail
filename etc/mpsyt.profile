@@ -6,39 +6,39 @@ include mpsyt.local
 # Persistent global definitions
 include globals.local
 
-# Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
-noblacklist /usr/local/lib/python2*
-noblacklist /usr/local/lib/python3*
-
+noblacklist ${HOME}/.config/mps-youtube
 noblacklist ${HOME}/.config/mpv
 noblacklist ${HOME}/.mplayer
-noblacklist ${HOME}/.config/mps-youtube
 noblacklist ${HOME}/.netrc
 noblacklist ${HOME}/mps
+
+# Allow python (blacklisted by disable-interpreters.inc)
+include allow-python2.inc
+include allow-python3.inc
+
 noblacklist ${MUSIC}
 noblacklist ${VIDEOS}
-noblacklist ${DOWNLOADS}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-xdg.inc
 
 mkdir ${HOME}/.config/mps-youtube
+mkdir ${HOME}/.config/mpv
+mkdir ${HOME}/.mplayer
+mkdir ${HOME}/mps
+whitelist ${HOME}/.config/mps-youtube
 whitelist ${HOME}/.config/mpv
 whitelist ${HOME}/.mplayer
-whitelist ${HOME}/.config/mps-youtube
 whitelist ${HOME}/.netrc
 whitelist ${HOME}/mps
+whitelist ${DOWNLOADS}
 whitelist ${MUSIC}
 whitelist ${VIDEOS}
-whitelist ${DOWNLOADS}
 include whitelist-common.inc
 include whitelist-var-common.inc
 
@@ -54,9 +54,7 @@ seccomp
 shell none
 tracelog
 
-private-bin mpsyt,mplayer,mpv,youtube-dl,python*,env,ffmpeg
+private-bin env,ffmpeg,mplayer,mpsyt,mpv,python*,youtube-dl
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

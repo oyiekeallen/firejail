@@ -31,6 +31,7 @@ noblacklist /tmp/akonadi-*
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -52,11 +53,8 @@ protocol unix,inet,inet6,netlink
 # we need to allow chroot, io_getevents, ioprio_set, io_setup, io_submit system calls
 seccomp.drop @clock,@cpu-emulation,@debug,@module,@obsolete,@raw-io,@reboot,@resources,@swap,acct,add_key,bpf,fanotify_init,io_cancel,io_destroy,kcmp,keyctl,mount,name_to_handle_at,nfsservctl,ni_syscall,open_by_handle_at,personality,pivot_root,process_vm_readv,ptrace,remap_file_pages,request_key,setdomainname,sethostname,syslog,umount,umount2,userfaultfd,vhangup,vmsplice
 # tracelog
-# writable-run-user is needed for signing and encrypting emails
-writable-run-user
 
 private-dev
 # private-tmp - interrupts connection to akonadi, breaks opening of email attachments
-
-noexec ${HOME}
-noexec /tmp
+# writable-run-user is needed for signing and encrypting emails
+writable-run-user

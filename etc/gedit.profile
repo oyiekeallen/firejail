@@ -8,11 +8,17 @@ include globals.local
 
 noblacklist ${HOME}/.config/enchant
 noblacklist ${HOME}/.config/gedit
+noblacklist ${HOME}/.config/git
 noblacklist ${HOME}/.gitconfig
+noblacklist ${HOME}/.git-credentials
 noblacklist ${HOME}/.python-history
+noblacklist ${HOME}/.python_history
+noblacklist ${HOME}/.pythonhist
+noblacklist ${HOME}/.pythonrc.py
 
 include disable-common.inc
 # include disable-devel.inc
+include disable-exec.inc
 # include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -40,9 +46,6 @@ tracelog
 
 # private-bin gedit
 private-dev
-# private-etc fonts
-private-lib /usr/bin/gedit,libtinfo.so.*,libreadline.so.*,gedit,libgspell-1.so.*,gconv,aspell
+private-lib aspell,gconv,gedit,libgspell-1.so.*,libreadline.so.*,libtinfo.so.*
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

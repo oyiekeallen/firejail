@@ -6,14 +6,25 @@ include pidgin.local
 # Persistent global definitions
 include globals.local
 
+ignore noexec ${RUNUSER}
+ignore noexec /dev/shm
+
 noblacklist ${HOME}/.purple
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
+include disable-xdg.inc
 
+mkdir ${HOME}/.purple
+whitelist ${HOME}/.purple
+include whitelist-common.inc
+include whitelist-var-common.inc
+
+apparmor
 caps.drop all
 netfilter
 nodvd
@@ -24,13 +35,10 @@ notv
 nou2f
 protocol unix,inet,inet6
 seccomp
-shell none
+# shell none
 tracelog
 
-private-bin pidgin
+# private-bin pidgin
 private-cache
 private-dev
 private-tmp
-
-noexec ${HOME}
-noexec /tmp

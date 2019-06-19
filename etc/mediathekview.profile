@@ -11,21 +11,18 @@ noblacklist ${HOME}/.config/smplayer
 noblacklist ${HOME}/.config/totem
 noblacklist ${HOME}/.config/vlc
 noblacklist ${HOME}/.config/xplayer
-noblacklist ${HOME}/.java
 noblacklist ${HOME}/.local/share/totem
 noblacklist ${HOME}/.local/share/xplayer
 noblacklist ${HOME}/.mediathek3
 noblacklist ${HOME}/.mplayer
 noblacklist ${VIDEOS}
 
-# Allow access to java
-noblacklist ${PATH}/java
-noblacklist /usr/lib/java
-noblacklist /etc/java
-noblacklist /usr/share/java
+# Allow java (blacklisted by disable-devel.inc)
+include allow-java.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -50,5 +47,3 @@ private-cache
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

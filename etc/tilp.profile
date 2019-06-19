@@ -9,6 +9,7 @@ noblacklist ${HOME}/.tilp
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -29,8 +30,6 @@ tracelog
 disable-mnt
 private-bin tilp
 private-cache
-private-etc fonts
+private-etc alternatives,fonts
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

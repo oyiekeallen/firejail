@@ -10,13 +10,12 @@ noblacklist /usr/local/sbin
 noblacklist /usr/sbin
 
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include allow-python2.inc
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-interpreters.inc
@@ -40,10 +39,8 @@ seccomp
 shell none
 
 disable-mnt
-private-bin pybitmessage,python*,sh,ldconfig,env,bash,stat
+private-bin bash,env,ldconfig,pybitmessage,python*,sh,stat
 private-dev
-private-etc PyBitmessage,PyBitmessage.conf,Trolltech.conf,fonts,gtk-2.0,hosts,ld.so.cache,ld.so.preload,localtime,pki,resolv.conf,selinux,sni-qt.conf,system-fips,xdg,ca-certificates,ssl,pki,crypto-policies
+private-etc alternatives,ca-certificates,crypto-policies,fonts,gtk-2.0,hosts,ld.so.cache,ld.so.preload,localtime,pki,pki,PyBitmessage,PyBitmessage.conf,resolv.conf,selinux,sni-qt.conf,ssl,system-fips,Trolltech.conf,xdg
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

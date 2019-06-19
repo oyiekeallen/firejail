@@ -6,9 +6,9 @@ include gpg.local
 # Persistent global definitions
 include globals.local
 
-blacklist /tmp/.X11-unix
-
 noblacklist ${HOME}/.gnupg
+
+blacklist /tmp/.X11-unix
 
 include disable-common.inc
 include disable-devel.inc
@@ -29,8 +29,7 @@ nou2f
 novideo
 protocol unix,inet,inet6
 seccomp
-# Causes gpg to hang
-#shell none
+shell none
 tracelog
 
 # private-bin gpg,gpg-agent

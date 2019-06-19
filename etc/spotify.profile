@@ -5,17 +5,15 @@ include spotify.local
 # Persistent global definitions
 include globals.local
 
-blacklist ${HOME}/.bashrc
-blacklist /lost+found
-blacklist /sbin
-blacklist /srv
-
 noblacklist ${HOME}/.cache/spotify
 noblacklist ${HOME}/.config/spotify
 noblacklist ${HOME}/.local/share/spotify
 
+blacklist ${HOME}/.bashrc
+
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -44,11 +42,11 @@ shell none
 tracelog
 
 disable-mnt
-private-bin spotify,bash,sh,zenity
+private-bin bash,cat,dirname,find,grep,head,rm,sh,spotify,tclsh,touch,zenity
 private-dev
-private-etc fonts,group,ld.so.cache,machine-id,pulse,resolv.conf,hosts,nsswitch.conf,host.conf,ca-certificates,ssl,pki,crypto-policies
+# Comment the next line or put 'ignore private-etc' in your spotify.local if want to see the albums covers or if you want to use the radio
+private-etc alternatives,ca-certificates,crypto-policies,fonts,group,host.conf,hosts,ld.so.cache,machine-id,nsswitch.conf,pki,pulse,resolv.conf,ssl
 private-opt spotify
+private-srv none
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

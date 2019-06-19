@@ -16,7 +16,6 @@ include disable-programs.inc
 mkdir ${HOME}/.config/Wire
 whitelist ${HOME}/.config/Wire
 whitelist ${DOWNLOADS}
-
 include whitelist-common.inc
 
 caps.drop all
@@ -35,7 +34,7 @@ shell none
 # it is not in PATH. To use Wire with firejail, run "firejail /opt/wire-desktop/wire-desktop"
 
 disable-mnt
-private-bin wire-desktop
+private-bin bash,electron,env,sh,wire-desktop
 private-dev
-private-etc fonts,machine-id,resolv.conf,ca-certificates,ssl,pki,crypto-policies
+private-etc alternatives,ca-certificates,crypto-policies,fonts,machine-id,pki,resolv.conf,ssl
 private-tmp

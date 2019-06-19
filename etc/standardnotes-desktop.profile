@@ -10,6 +10,7 @@ noblacklist ${HOME}/.config/Standard Notes
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -22,8 +23,8 @@ include whitelist-var-common.inc
 
 apparmor
 caps.drop all
-netfilter
 machine-id
+netfilter
 nodbus
 nodvd
 nogroups
@@ -38,7 +39,5 @@ seccomp
 disable-mnt
 private-dev
 private-tmp
-private-etc ca-certificates,fonts,host.conf,hostname,hosts,resolv.conf,ssl,pki,crypto-policies,xdg
+private-etc alternatives,ca-certificates,crypto-policies,fonts,host.conf,hostname,hosts,pki,resolv.conf,ssl,xdg
 
-noexec ${HOME}
-noexec /tmp

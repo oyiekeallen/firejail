@@ -14,6 +14,7 @@ noblacklist ${MUSIC}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -33,11 +34,9 @@ protocol unix
 seccomp
 shell none
 
-#private-bin sh,ardour4,ardour5,ardour5-copy-mixer,ardour5-export,ardour5-fix_bbtppq,grep,sed,ldd,nm
+#private-bin ardour4,ardour5,ardour5-copy-mixer,ardour5-export,ardour5-fix_bbtppq,grep,ldd,nm,sed,sh
 private-cache
 private-dev
-#private-etc pulse,X11,alternatives,ardour4,ardour5,fonts,machine-id,asound.conf
+#private-etc alternatives,ardour4,ardour5,asound.conf,fonts,machine-id,pulse,X11
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

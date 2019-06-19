@@ -7,18 +7,15 @@ include arduino.local
 include globals.local
 
 noblacklist ${HOME}/.arduino15
-noblacklist ${HOME}/.java
 noblacklist ${HOME}/Arduino
 noblacklist ${DOCUMENTS}
 
-# Allow access to java
-noblacklist ${PATH}/java
-noblacklist /usr/lib/java
-noblacklist /etc/java
-noblacklist /usr/share/java
+# Allow java (blacklisted by disable-devel.inc)
+include allow-java.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -28,7 +25,7 @@ caps.drop all
 netfilter
 no3d
 nodvd
-nogroups
+# nogroups
 nonewprivs
 noroot
 nosound
@@ -41,5 +38,3 @@ shell none
 private-cache
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

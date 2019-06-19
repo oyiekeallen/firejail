@@ -6,9 +6,9 @@ include w3m.local
 # Persistent global definitions
 include globals.local
 
-blacklist /tmp/.X11-unix
-
 noblacklist ${HOME}/.w3m
+
+blacklist /tmp/.X11-unix
 
 include disable-common.inc
 include disable-devel.inc
@@ -36,5 +36,5 @@ tracelog
 # private-bin w3m
 private-cache
 private-dev
-private-etc resolv.conf,ssl,pki,ca-certificates,crypto-policies
+private-etc alternatives,ca-certificates,crypto-policies,pki,resolv.conf,ssl
 private-tmp

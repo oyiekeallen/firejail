@@ -7,22 +7,30 @@ include git.local
 # Persistent global definitions
 include globals.local
 
-blacklist /tmp/.X11-unix
-
+noblacklist ${HOME}/.config/git
+noblacklist ${HOME}/.config/nano
 noblacklist ${HOME}/.emacs
 noblacklist ${HOME}/.emacs.d
 noblacklist ${HOME}/.gitconfig
+noblacklist ${HOME}/.git-credentials
 noblacklist ${HOME}/.gnupg
+noblacklist ${HOME}/.nanorc
 noblacklist ${HOME}/.oh-my-zsh
 noblacklist ${HOME}/.ssh
 noblacklist ${HOME}/.vim
 noblacklist ${HOME}/.viminfo
 
+blacklist /tmp/.X11-unix
+
 include disable-common.inc
+include disable-exec.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+apparmor
 caps.drop all
+ipc-namespace
+machine-id
 netfilter
 no3d
 nodvd
@@ -39,3 +47,5 @@ shell none
 
 private-cache
 private-dev
+
+memory-deny-write-execute

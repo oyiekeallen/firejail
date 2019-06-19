@@ -80,12 +80,14 @@ void preproc_mount_mnt_dir(void) {
 	if (!tmpfs_mounted) {
 		if (arg_debug)
 			printf("Mounting tmpfs on %s directory\n", RUN_MNT_DIR);
-		if (mount("tmpfs", RUN_MNT_DIR, "tmpfs", MS_NOSUID | MS_STRICTATIME | MS_REC,  "mode=755,gid=0") < 0)
+		if (mount("tmpfs", RUN_MNT_DIR, "tmpfs", MS_NOSUID | MS_STRICTATIME,  "mode=755,gid=0") < 0)
 			errExit("mounting /run/firejail/mnt");
 		tmpfs_mounted = 1;
 		fs_logger2("tmpfs", RUN_MNT_DIR);
 
 #ifdef HAVE_SECCOMP
+		create_empty_dir_as_root(RUN_SECCOMP_DIR, 0755);
+
 		if (arg_seccomp_block_secondary)
 			copy_file(PATH_SECCOMP_BLOCK_SECONDARY, RUN_SECCOMP_BLOCK_SECONDARY, getuid(), getgid(), 0644); // root needed
 		else {
@@ -189,4 +191,3 @@ void preproc_clean_run(void) {
 
 	free(pidarr);
 }
-

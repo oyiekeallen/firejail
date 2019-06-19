@@ -1,0 +1,43 @@
+# Firejail profile for PROGRAM_NAME
+# Description: DESCRIPTION
+# This file is overwritten after every install/update
+# Persistent local customizations
+include PROFILE.local
+# Persistent global definitions
+# added by included profile
+#include globals.local
+#NOTE: let include globals.local commented
+
+# For more informations see profile.template
+
+# Ignore something that is in the included profile
+#ignore net none
+#ignore private-bin
+#ignore seccomp
+#...
+
+# Additional noblacklisting (if needed)
+#noblacklist PATH
+
+# Additional allow includes (if needed)
+
+# Additional blacklisting (if needed)
+#blacklist PATH
+
+# Additional whitelisting (if needed)
+#mkdir PATH
+##mkfile PATH
+#whitelist PATH
+
+# Additional options (if needed)
+
+# Additional private-options (if needed)
+# Add programs to private-bin (if needed)
+#private-bin PROGRAMS
+# Add files to private-etc (if needed)
+#private-etc FILES
+
+# Additional special options (if needed)
+
+# Redirect
+include PROFILE.profile

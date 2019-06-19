@@ -10,6 +10,7 @@ noblacklist ${HOME}/.config/arkrc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -33,11 +34,9 @@ protocol unix
 seccomp
 shell none
 
-private-bin ark,unrar,rar,unzip,zip,zipinfo,7z,p7zip,unar,lsar,lrzip,lzop,lz4,bash,sh,tclsh
-#private-etc smb.conf,samba,mtab,fonts,drirc,kde5rc,passwd,group,xdg
+private-bin 7z,ark,bash,lrzip,lsar,lz4,lzop,p7zip,rar,sh,tclsh,unar,unrar,unzip,zip,zipinfo
+#private-etc alternatives,drirc,fonts,group,kde5rc,mtab,passwd,samba,smb.conf,xdg
 
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

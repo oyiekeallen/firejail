@@ -11,15 +11,12 @@ include globals.local
 noblacklist ${PATH}/mount
 noblacklist ${PATH}/umount
 
-# Allow access to perl
-noblacklist ${PATH}/cpan*
-noblacklist ${PATH}/core_perl
-noblacklist ${PATH}/perl
-noblacklist /usr/lib/perl*
-noblacklist /usr/share/perl*
+# Allow perl (blacklisted by disable-interpreters.inc)
+include allow-perl.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -44,10 +41,8 @@ shell none
 
 disable-mnt
 private
-private-bin awk,bzip2,cat,coreos-install,cpucontrol,cut,dd,dmesg,dnf,echo,grep,gunzip,gz,gzip,head,id,kldload,kldstat,liblz4-tool,lzop,mktemp,modinfo,modprobe,mount,nm,objdump,od,perl,printf,readelf,rm,sed,seq,sh,sort,spectre-meltdown-checker,spectre-meltdown-checker.sh,stat,strings,sysctl,tail,test,toolbox,tr,uname,which,xz-utils
+private-bin awk,bzip2,cat,coreos-install,cpucontrol,cut,dd,dirname,dmesg,dnf,echo,grep,gunzip,gz,gzip,head,id,kldload,kldstat,liblz4-tool,lzop,mktemp,modinfo,modprobe,mount,nm,objdump,od,perl,printf,readelf,rm,sed,seq,sh,sort,spectre-meltdown-checker,spectre-meltdown-checker.sh,stat,strings,sysctl,tail,test,toolbox,tr,uname,which,xz-utils
 private-cache
 private-tmp
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

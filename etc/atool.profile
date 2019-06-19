@@ -7,26 +7,26 @@ include atool.local
 # Persistent global definitions
 include globals.local
 
-blacklist /tmp/.X11-unix
-
 # Allow perl (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/cpan*
-noblacklist ${PATH}/core_perl
-noblacklist ${PATH}/perl
-noblacklist /usr/lib/perl*
-noblacklist /usr/share/perl*
+include allow-perl.inc
 
 include disable-common.inc
 # include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+apparmor
 caps.drop all
-netfilter
+hostname atool
+ipc-namespace
+machine-id
 net none
+netfilter
 no3d
 nodvd
+nodbus
 nogroups
 nonewprivs
 noroot
@@ -38,10 +38,13 @@ protocol unix
 seccomp
 shell none
 tracelog
+x11 none
 
+# private-bin atool,perl
 private-cache
-# private-bin atool
 private-dev
 # without login.defs atool complains and uses UID/GID 1000 by default
-private-etc passwd,group,login.defs
+private-etc alternatives,group,login.defs,passwd
 private-tmp
+
+memory-deny-write-execute

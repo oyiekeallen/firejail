@@ -6,17 +6,18 @@ include torbrowser-launcher.local
 # Persistent global definitions
 include globals.local
 
+ignore noexec ${HOME}
+
 noblacklist ${HOME}/.config/torbrowser
 noblacklist ${HOME}/.local/share/torbrowser
 
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include	allow-python2.inc
+include	allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -49,7 +50,5 @@ shell none
 disable-mnt
 private-bin bash,cp,dirname,env,expr,file,getconf,gpg,grep,id,ln,mkdir,python*,readlink,rm,sed,sh,tail,tar,tclsh,test,tor-browser-en,torbrowser-launcher,xz
 private-dev
-private-etc fonts,hostname,hosts,resolv.conf,pki,ssl,ca-certificates,crypto-policies,alsa,asound.conf,pulse,machine-id,ld.so.cache
+private-etc alsa,alternatives,asound.conf,ca-certificates,crypto-policies,fonts,hostname,hosts,ld.so.cache,machine-id,pki,pulse,resolv.conf,ssl
 private-tmp
-
-noexec /tmp

@@ -12,6 +12,7 @@ noblacklist ${DOCUMENTS}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -38,9 +39,7 @@ tracelog
 
 private-bin xreader,xreader-previewer,xreader-thumbnailer
 private-dev
-private-etc fonts,ld.so.cache
+private-etc alternatives,fonts,ld.so.cache
 private-tmp
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

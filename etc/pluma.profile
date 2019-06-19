@@ -7,9 +7,14 @@ include pluma.local
 include globals.local
 
 noblacklist ${HOME}/.config/pluma
+noblacklist ${HOME}/.python-history
+noblacklist ${HOME}/.python_history
+noblacklist ${HOME}/.pythonhist
+noblacklist ${HOME}/.pythonrc.py
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -37,10 +42,9 @@ tracelog
 
 private-bin pluma
 private-dev
-# private-etc fonts
 private-lib pluma
 private-tmp
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp
+
+join-or-start pluma

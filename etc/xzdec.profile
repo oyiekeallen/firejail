@@ -5,23 +5,33 @@ quiet
 # Persistent local customizations
 include xzdec.local
 # Persistent global definitions
-# added by included default.profile
-#include globals.local
+include globals.local
 
-blacklist /tmp/.X11-unix
+include disable-common.inc
+include disable-devel.inc
+include disable-exec.inc
+include disable-interpreters.inc
+include disable-passwdmgr.inc
+include disable-programs.inc
 
-ignore noroot
+caps.drop all
+ipc-namespace
+machine-id
 net none
 no3d
 nodbus
 nodvd
+#nogroups
+nonewprivs
+#noroot
 nosound
 notv
 nou2f
 novideo
+protocol unix
+seccomp
 shell none
 tracelog
+x11 none
 
 private-dev
-
-include default.profile

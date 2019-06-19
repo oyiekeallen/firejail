@@ -8,6 +8,7 @@ include globals.local
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -16,8 +17,12 @@ include whitelist-var-common.inc
 
 apparmor
 caps.drop all
-net none
+#ipc-namespace - causing issues launching on archlinux
+machine-id
+# net none - breaks on older Ubuntu versions
 no3d
+# nodbus - makes settings immutable - comment if you need settings support
+# or put 'ignore nodbus' in your file-roller.local
 nodbus
 nodvd
 nogroups
@@ -34,9 +39,6 @@ tracelog
 
 # private-bin file-roller
 private-dev
-# private-etc fonts
 # private-tmp
 
-#memory-deny-write-execute  - breaks on Arch
-noexec ${HOME}
-noexec /tmp
+# memory-deny-write-execute

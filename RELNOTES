@@ -1,3 +1,42 @@
+firejail (0.9.61) baseline; urgency=low
+  * work in progress
+  * profile templates
+  * new profiles: qgis, klatexformula, klatexformula_cmdl, links, xlinks
+  * new profiles: pandoc, teams-for-linux, OpenArena, gnome-sound-recorder
+  * new profiles: godot, tcpdump, tshark, newsbeuter, keepassxc-cli
+  * new profiles: keepassxc-proxy, rhythmbox-client
+ -- netblue30 <netblue30@yahoo.com>  Sat, 1 Jun 2019 08:00:00 -0500
+
+firejail (0.9.60) baseline; urgency=low
+  * security bug reported by Austin Morton:
+    Seccomp filters are copied into /run/firejail/mnt, and are writable
+    within the jail. A malicious process can modify files from inside the
+    jail. Processes that are later joined to the jail will not have seccomp
+    filters applied.
+  * memory-deny-write-execute now also blocks memfd_create
+  * add private-cwd option to control working directory within jail
+  * blocking system D-Bus socket with --nodbus
+  * bringing back Centos 6 support
+  * drop support for flatpak/snap packages
+  * new profiles: crow, nyx, mypaint, celluoid, nano, transgui, mpdris2
+  * new profiles: sysprof, simplescreenrecorder, geekbench, xfce4-mixer
+  * new profiles: pavucontrol, d-feet, seahorse, secret-tool, gnome-keyring
+  * new profiles: regextester, hardinfo, gnome-system-log, gnome-nettool
+  * new profiles: netactview, redshift, devhelp, assogiate, subdownloader
+  * new profiles: font-manager, exfalso, gconf-editor, dconf-editor
+  * new profiles: sysprof-cli, seahorse-tool, secret-tool, dconf, gsettings
+  * new profiles: code-oss, pragha, Maelstrom, ostrichriders, bzflag
+  * new profiles: freeciv, lincity-ng, megaglest, openttd, crawl, crawl-tiles
+  * new profiles: teeworlds, torcs, tremulous, warsow, lugaru, manaplus
+  * new profiles: pioneer, scorched3d, widelands, freemind, kid3, kid3-qt
+  * new profiles: kid3-cli, nomacs, freecol, opencity, openclonk, slashem
+  * new profiles: vultureseye, vulturesclaw, anki, cheese, utox, mp3splt
+  * new profiles: oggsplt, flacsplt, gramps, newsboat, freeoffice-planmaker
+  * new profiles: autokey-gtk, autokey-qt, autokey-run, autokey-shell
+  * new profiles: freeoffice-presentations, freeoffice-textmaker, mp3wrap
+  * new profiles: inkview, meteo-qt, mp3splt-gtk, ktouch, yelp, cantata
+ -- netblue30 <netblue30@yahoo.com>  Sun, 26 May 2019 08:00:00 -0500
+
 firejail (0.9.58,2) baseline; urgency=low
   * cgroup flag in /etc/firejail/firejail.config file
   * name-change flag in /etc/firejail.config file

@@ -7,22 +7,22 @@ include clawsker.local
 include globals.local
 
 noblacklist ${HOME}/.claws-mail
-whitelist ${HOME}/.claws-mail
 
 # Allow perl (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/cpan*
-noblacklist ${PATH}/core_perl
-noblacklist ${PATH}/perl
-noblacklist /usr/lib/perl*
-noblacklist /usr/share/perl*
+include allow-perl.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
+
+mkdir ${HOME}/.claws-mail
+whitelist ${HOME}/.claws-mail
 include whitelist-common.inc
 
+apparmor
 caps.drop all
 net none
 no3d
@@ -39,15 +39,12 @@ protocol unix
 seccomp
 shell none
 
-# disable-mnt
-# private
-private-bin clawsker,perl
+disable-mnt
+private-bin bash,clawsker,perl,sh,which
 private-cache
 private-dev
-private-etc fonts
-private-lib girepository-1.*,libgirepository-1.*,perl*
+private-etc alternatives,fonts
+private-lib girepository-1.*,libdbus-glib-1.so.*,libetpan.so.*,libgirepository-1.*,libgtk-x11-2.0.so.*,libstartup-notification-1.so.*,perl*
 private-tmp
 
-# memory-deny-write-execute - breaks on Arch
-noexec ${HOME}
-noexec /tmp
+#memory-deny-write-execute - breaks on Arch (see issue #1803)

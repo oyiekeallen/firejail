@@ -6,17 +6,16 @@ include ssh-agent.local
 # Persistent global definitions
 include globals.local
 
-blacklist /tmp/.X11-unix
-
 noblacklist /etc/ssh
 noblacklist /tmp/ssh-*
 noblacklist ${HOME}/.ssh
+
+blacklist /tmp/.X11-unix
 
 include disable-common.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
-shell none
 caps.drop all
 netfilter
 no3d
@@ -26,4 +25,6 @@ noroot
 notv
 protocol unix,inet,inet6
 seccomp
+shell none
+
 writable-run-user

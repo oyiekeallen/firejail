@@ -9,13 +9,12 @@ noblacklist ${HOME}/.cache/ms-office-online
 noblacklist ${HOME}/.jak
 
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include allow-python2.inc
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -36,10 +35,8 @@ shell none
 tracelog
 
 disable-mnt
-private-bin bash,fonts,env,jak,ms-office,python*,sh
-private-etc resolv.conf,ca-certificates,ssl,pki,crypto-policies
+private-bin bash,env,fonts,jak,ms-office,python*,sh
+private-etc alternatives,ca-certificates,crypto-policies,pki,resolv.conf,ssl
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

@@ -19,7 +19,10 @@ blacklist-nolog ${HOME}/.local/share/fish/fish_history
 blacklist-nolog ${HOME}/.local/share/klipper
 blacklist-nolog ${HOME}/.macromedia
 blacklist-nolog ${HOME}/.python-history
+blacklist-nolog ${HOME}/.python_history
 blacklist-nolog ${HOME}/.pythonhist
+blacklist-nolog ${HOME}/.lesshst
+blacklist-nolog ${HOME}/.viminfo
 blacklist-nolog /tmp/clipmenu*
 
 # X11 session autostart
@@ -242,17 +245,20 @@ read-only ${HOME}/.ssh/authorized_keys
 
 # Initialization files that allow arbitrary command execution
 read-only ${HOME}/.caffrc
+read-only ${HOME}/.cargo/env
 read-only ${HOME}/.dotfiles
 read-only ${HOME}/.emacs
 read-only ${HOME}/.emacs.d
 read-only ${HOME}/.exrc
 read-only ${HOME}/.gvimrc
+read-only ${HOME}/.homesick
 read-only ${HOME}/.iscreenrc
 read-only ${HOME}/.mailcap
 read-only ${HOME}/.msmtprc
 read-only ${HOME}/.mutt/muttrc
 read-only ${HOME}/.muttrc
 read-only ${HOME}/.nano
+read-only ${HOME}/.pythonrc.py
 read-only ${HOME}/.reportbugrc
 read-only ${HOME}/.tmux.conf
 read-only ${HOME}/.vim
@@ -264,7 +270,6 @@ read-only ${HOME}/_exrc
 read-only ${HOME}/_gvimrc
 read-only ${HOME}/_vimrc
 read-only ${HOME}/dotfiles
-read-only ${HOME}/.homesick
 
 # Make directories commonly found in $PATH read-only
 read-only ${HOME}/.gem
@@ -274,7 +279,6 @@ read-only ${HOME}/bin
 read-only ${HOME}/.bin
 read-only ${HOME}/.local/bin
 read-only ${HOME}/.cargo/bin
-read-only ${HOME}/.cargo/env
 blacklist ${HOME}/.cargo/registry
 blacklist ${HOME}/.cargo/config
 
@@ -293,23 +297,28 @@ blacklist ${HOME}/.Private
 blacklist ${HOME}/.caff
 blacklist ${HOME}/.cert
 blacklist ${HOME}/.config/keybase
+blacklist ${HOME}/.davfs2/secrets
 blacklist ${HOME}/.ecryptfs
 blacklist ${HOME}/.fetchmailrc
 blacklist ${HOME}/.gnome2/keyrings
 blacklist ${HOME}/.gnupg
+blacklist ${HOME}/.config/hub
 blacklist ${HOME}/.kde/share/apps/kwallet
 blacklist ${HOME}/.kde4/share/apps/kwallet
 blacklist ${HOME}/.local/share/keyrings
 blacklist ${HOME}/.local/share/kwalletd
+blacklist ${HOME}/.local/share/plasma-vault
 blacklist ${HOME}/.msmtprc
 blacklist ${HOME}/.mutt
 blacklist ${HOME}/.muttrc
 blacklist ${HOME}/.netrc
+blacklist ${HOME}/.nyx
 blacklist ${HOME}/.pki
 blacklist ${HOME}/.local/share/pki
 blacklist ${HOME}/.smbcredentials
 blacklist ${HOME}/.ssh
 blacklist ${HOME}/.vaults
+blacklist /etc/davfs2/secrets
 blacklist /etc/group+
 blacklist /etc/group-
 blacklist /etc/gshadow
@@ -411,3 +420,12 @@ blacklist /usr/share/flatpak
 blacklist /var/lib/flatpak
 # most of the time bwrap is SUID binary
 blacklist ${PATH}/bwrap
+
+# mail directories used by mutt
+blacklist ${HOME}/.Mail
+blacklist ${HOME}/.mail
+blacklist ${HOME}/.signature
+blacklist ${HOME}/Mail
+blacklist ${HOME}/mail
+blacklist ${HOME}/postponed
+blacklist ${HOME}/sent

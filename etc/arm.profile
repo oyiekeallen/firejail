@@ -9,13 +9,12 @@ include globals.local
 noblacklist ${HOME}/.arm
 
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include allow-python2.inc
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -42,10 +41,8 @@ shell none
 tracelog
 
 disable-mnt
-private-bin arm,tor,sh,bash,python*,ps,lsof,ldconfig
+private-bin arm,bash,ldconfig,lsof,ps,python*,sh,tor
 private-dev
-private-etc tor,passwd,ca-certificates,ssl,pki,crypto-policies
+private-etc alternatives,ca-certificates,crypto-policies,passwd,pki,ssl,tor
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

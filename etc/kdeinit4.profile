@@ -9,6 +9,7 @@ include globals.local
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -29,9 +30,7 @@ protocol unix,inet,inet6,netlink
 seccomp
 shell none
 
-private-bin kdeinit4,kbuildsycoca4,kded4,knotify4
+private-bin kbuildsycoca4,kded4,kdeinit4,knotify4
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

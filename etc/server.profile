@@ -9,18 +9,19 @@ include globals.local
 # it allows /sbin and /usr/sbin directories - this is where servers are installed
 # depending on your usage, you can enable some of the commands below:
 
-blacklist /tmp/.X11-unix
-
 noblacklist /sbin
 noblacklist /usr/sbin
 # noblacklist /var/opt
 
+blacklist /tmp/.X11-unix
+
 include disable-common.inc
 # include disable-devel.inc
+# include disable-exec.inc
 # include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
-#include disable-xdg.inc
+# include disable-xdg.inc
 
 caps
 # ipc-namespace
@@ -43,10 +44,8 @@ private
 # private-bin program
 # private-cache
 private-dev
-# private-etc none
+# private-etc alternatives
 # private-lib
 private-tmp
 
 # memory-deny-write-execute
-# noexec ${HOME}
-# noexec /tmp

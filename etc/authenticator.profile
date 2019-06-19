@@ -6,22 +6,23 @@ include authenticator.local
 # Persistent global definitions
 include globals.local
 
-# blacklisted in 'disable-programs.local'
+noblacklist ${HOME}/.cache/Authenticator
 noblacklist ${HOME}/.config/Authenticator
 
-# Allow python 3.x (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python3*
+# Allow python (blacklisted by disable-interpreters.inc)
+#include allow-python2.inc
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
 # apparmor
 caps.drop all
-net none
+netfilter
 no3d
 # nodbus - makes settings immutable
 nodvd
@@ -32,18 +33,14 @@ nosound
 notv
 nou2f
 # novideo
-protocol unix
+protocol unix,inet,inet6
 seccomp
 shell none
 
 disable-mnt
-# private-bin authenticator
-private-cache
+# private-bin authenticator,python*
 private-dev
-private-etc fonts,ld.so.cache
-# private-lib
+private-etc alternatives,ca-certificates,crypto-policies,fonts,ld.so.cache,pki,resolv.conf,ssl
 private-tmp
 
-# memory-deny-write-execute - breaks on Arch
-noexec ${HOME}
-noexec /tmp
+#memory-deny-write-execute - breaks on Arch (see issue #1803)

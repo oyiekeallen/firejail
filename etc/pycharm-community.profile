@@ -5,16 +5,14 @@ include pycharm-community.local
 # Persistent global definitions
 include globals.local
 
-noblacklist ${HOME}/snap
 noblacklist ${HOME}/.PyCharmCE*
 noblacklist ${HOME}/.python-history
-noblacklist ${HOME}/.java
+noblacklist ${HOME}/.python_history
+noblacklist ${HOME}/.pythonhist
+noblacklist ${HOME}/.pythonrc.py
 
-# Allow access to java
-noblacklist ${PATH}/java
-noblacklist /usr/lib/java
-noblacklist /etc/java
-noblacklist /usr/share/java
+# Allow java (blacklisted by disable-devel.inc)
+include allow-java.inc
 
 include disable-common.inc
 include disable-devel.inc
@@ -32,7 +30,7 @@ novideo
 shell none
 tracelog
 
-# private-etc fonts,passwd - minimal required to run but will probably break
+# private-etc alternatives,fonts,passwd - minimal required to run but will probably break
 # program!
 private-cache
 private-dev

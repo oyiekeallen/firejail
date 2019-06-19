@@ -11,13 +11,12 @@ noblacklist ${HOME}/.config/liferea
 noblacklist ${HOME}/.local/share/liferea
 
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include allow-python2.inc
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -50,5 +49,3 @@ disable-mnt
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

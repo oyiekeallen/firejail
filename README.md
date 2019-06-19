@@ -30,8 +30,14 @@ Documentation: https://firejail.wordpress.com/documentation-2/
 
 FAQ: https://firejail.wordpress.com/support/
 
+Wiki: https://github.com/netblue30/firejail/wiki
+
 Travis-CI status: https://travis-ci.org/netblue30/firejail
 
+
+## Security vulnerabilities
+
+We take security bugs very seriously. If you believe you have found one, please report it by emailing us at netblue30@yahoo.com
 
 ## Compile and install
 `````
@@ -95,10 +101,16 @@ If you keep additional Firejail security profiles in a public repository, please
 
 Use this issue to request new profiles: [#1139](https://github.com/netblue30/firejail/issues/1139)
 
-We also keep a list of profile fixes for previous released versions in [etc-fixes](https://github.com/netblue30/firejail/tree/master/etc-fixes) directory .
+You can also use this tool to get a list of syscalls needed by a program: [contrib/syscalls.sh](contrib/syscalls.sh).
+
+We also keep a list of profile fixes for previous released versions in [etc-fixes](https://github.com/netblue30/firejail/tree/master/etc-fixes) directory.
 `````
 
 `````
-## Current development version: 0.9.59
+## Latest released version: 0.9.60
+
+## Current development version: 0.9.61
 
 ## New profiles:
+
+klatexformula, klatexformula_cmdl, links, pandoc, qgis, teams-for-linux, xlinks, OpenArena, gnome-sound-recorder, godot, tcpdump, tshark, keepassxc-cli, keepassxc-proxy, newsbeuter, rhythmbox-client

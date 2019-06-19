@@ -6,9 +6,9 @@ include elinks.local
 # Persistent global definitions
 include globals.local
 
-blacklist /tmp/.X11-unix
-
 noblacklist ${HOME}/.elinks
+
+blacklist /tmp/.X11-unix
 
 include disable-common.inc
 include disable-devel.inc
@@ -36,5 +36,5 @@ tracelog
 # private-bin elinks
 private-cache
 private-dev
-# private-etc ca-certificates,ssl,pki,crypto-policies
+# private-etc alternatives,ca-certificates,crypto-policies,pki,ssl
 private-tmp

@@ -5,10 +5,11 @@ include aosp.local
 # Persistent global definitions
 include globals.local
 
-
 noblacklist ${HOME}/.android
 noblacklist ${HOME}/.bash_history
+noblacklist ${HOME}/.config/git
 noblacklist ${HOME}/.gitconfig
+noblacklist ${HOME}/.git-credentials
 noblacklist ${HOME}/.gradle
 noblacklist ${HOME}/.jack-server
 noblacklist ${HOME}/.jack-settings

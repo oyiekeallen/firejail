@@ -12,6 +12,7 @@ noblacklist ${HOME}/.cache/libgweather
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -36,10 +37,8 @@ shell none
 tracelog
 
 disable-mnt
-# private-bin gjs gnome-weather
+# private-bin gjs,gnome-weather
 private-dev
-# private-etc fonts,ca-certificates,ssl,pki,crypto-policies
+# private-etc alternatives,ca-certificates,crypto-policies,fonts,pki,ssl
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

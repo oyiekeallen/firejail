@@ -271,6 +271,7 @@ static int monitor_application(pid_t app_pid) {
 	}
 
 	int status = 0;
+	int app_status = 0;
 	while (monitored_pid) {
 		usleep(20000);
 		char *msg;
@@ -295,6 +296,8 @@ static int monitor_application(pid_t app_pid) {
 				sleep(1);
 				break;
 			}
+			else if (rv == app_pid)
+				app_status = status;
 
 			// handle --timeout
 			if (options) {
@@ -352,8 +355,8 @@ static int monitor_application(pid_t app_pid) {
 			printf("Sandbox monitor: monitoring %d\n", monitored_pid);
 	}
 
-	// return the latest exit status.
-	return status;
+	// return the appropriate exit status.
+	return arg_deterministic_exit_code ? app_status : status;
 }
 
 static void print_time(void) {
@@ -923,7 +926,7 @@ int sandbox(void* sandbox_arg) {
 	// Session D-BUS
 	//****************************
 	if (arg_nodbus)
-		dbus_session_disable();
+		dbus_disable();
 
 
 	//****************************
@@ -1016,6 +1019,10 @@ int sandbox(void* sandbox_arg) {
 	if (cfg.cwd) {
 		if (chdir(cfg.cwd) == 0)
 			cwd = 1;
+		else if (arg_private_cwd) {
+			fprintf(stderr, "Error: unable to enter private working directory: %s: %s\n", cfg.cwd, strerror(errno));
+			exit(1);
+		}
 	}
 
 	if (!cwd) {
@@ -1038,17 +1045,6 @@ int sandbox(void* sandbox_arg) {
 		}
 	}
 
-	// set nice
-	if (arg_nice) {
-		errno = 0;
-		int rv = nice(cfg.nice);
-		(void) rv;
-		if (errno) {
-			fwarning("cannot set nice value\n");
-			errno = 0;
-		}
-	}
-
 	EUID_ROOT();
 	// clean /tmp/.X11-unix sockets
 	fs_x11();
@@ -1064,20 +1060,11 @@ int sandbox(void* sandbox_arg) {
 	// save state of nonewprivs
 	save_nonewprivs();
 
-	// set capabilities
-	set_caps();
-
-	// set cpu affinity
-	if (cfg.cpus) {
-		save_cpu(); // save cpu affinity mask to CPU_CFG file
-		EUID_USER();
-		set_cpu_affinity();
-		EUID_ROOT();
-	}
+	// save cpu affinity mask to CPU_CFG file
+	save_cpu();
 
 	// save cgroup in CGROUP_CFG file
-	if (cfg.cgroup)
-		save_cgroup();
+	save_cgroup();
 
 	// set seccomp
 #ifdef HAVE_SECCOMP
@@ -1118,14 +1105,19 @@ int sandbox(void* sandbox_arg) {
 		int rv = unlink(RUN_SECCOMP_MDWX);
 		(void) rv;
 	}
+	// make seccomp filters read-only
+	fs_remount(RUN_SECCOMP_DIR, MOUNT_READONLY, 0);
 #endif
+
+	// set capabilities
+	set_caps();
 
 	//****************************************
 	// communicate progress of sandbox set up
 	// to --join
 	//****************************************
 
-	FILE *fp = create_ready_for_join_file();
+	FILE *rj = create_ready_for_join_file();
 
 	//****************************************
 	// create a new user namespace
@@ -1175,10 +1167,23 @@ int sandbox(void* sandbox_arg) {
 	}
 
 	//****************************************
-	// drop privileges, fork the application and monitor it
+	// drop privileges
 	//****************************************
 	drop_privs(arg_nogroups);
-	prctl(PR_SET_PDEATHSIG, SIGKILL, 0, 0, 0); // kill the sandbox in case the parent died
+
+	// kill the sandbox in case the parent died
+	prctl(PR_SET_PDEATHSIG, SIGKILL, 0, 0, 0);
+
+	//****************************************
+	// set cpu affinity
+	//****************************************
+
+	if (cfg.cpus)
+		set_cpu_affinity();
+
+	//****************************************
+	// fork the application and monitor it
+	//****************************************
 	pid_t app_pid = fork();
 	if (app_pid == -1)
 		errExit("fork");
@@ -1196,13 +1201,15 @@ int sandbox(void* sandbox_arg) {
 				printf("AppArmor enabled\n");
 		}
 #endif
-		// set rlimits
+		// set nice and rlimits
+		if (arg_nice)
+			set_nice(cfg.nice);
 		set_rlimits();
-		// start app
-		start_application(0, fp);
+
+		start_application(0, rj);
 	}
 
-	fclose(fp);
+	fclose(rj);
 
 	int status = monitor_application(app_pid);	// monitor application
 	flush_stdin();

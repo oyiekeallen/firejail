@@ -10,10 +10,12 @@ noblacklist ${HOME}/.config/Gitter
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+mkdir ${HOME}/.config/Gitter
 whitelist ${DOWNLOADS}
 whitelist ${HOME}/.config/autostart
 whitelist ${HOME}/.config/Gitter
@@ -35,10 +37,8 @@ shell none
 
 disable-mnt
 private-bin bash,env,gitter
-private-etc fonts,pulse,resolv.conf,ca-certificates,ssl,pki,crypto-policies
+private-etc alternatives,ca-certificates,crypto-policies,fonts,pki,pulse,resolv.conf,ssl
 private-opt Gitter
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

@@ -6,25 +6,29 @@ include soundconverter.local
 # Persistent global definitions
 include globals.local
 
-noblacklist ${MUSIC}
-
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include allow-python2.inc
+include allow-python3.inc
+
+noblacklist ${MUSIC}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-xdg.inc
 
+whitelist ${DOWNLOADS}
+whitelist ${MUSIC}
+include whitelist-common.inc
 include whitelist-var-common.inc
 
+apparmor
 caps.drop all
-net none
+ipc-namespace
+machine-id
 no3d
 nodvd
 nogroups
@@ -42,5 +46,3 @@ private-cache
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

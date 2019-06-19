@@ -9,8 +9,10 @@ noblacklist ${HOME}/.Skype
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-programs.inc
 
 caps.drop all
@@ -26,10 +28,8 @@ seccomp
 shell none
 
 disable-mnt
-#private-bin skype,bash
+#private-bin bash,skype
 private-cache
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

@@ -6,13 +6,12 @@ include mutt.local
 # Persistent global definitions
 include globals.local
 
-blacklist /tmp/.X11-unix
-
 noblacklist /var/mail
 noblacklist /var/spool/mail
 noblacklist ${HOME}/.Mail
 noblacklist ${HOME}/.bogofilter
 noblacklist ${HOME}/.cache/mutt
+noblacklist ${HOME}/.config/nano
 noblacklist ${HOME}/.elinks
 noblacklist ${HOME}/.emacs
 noblacklist ${HOME}/.emacs.d
@@ -22,6 +21,7 @@ noblacklist ${HOME}/.mailcap
 noblacklist ${HOME}/.msmtprc
 noblacklist ${HOME}/.mutt
 noblacklist ${HOME}/.muttrc
+noblacklist ${HOME}/.nanorc
 noblacklist ${HOME}/.signature
 noblacklist ${HOME}/.vim
 noblacklist ${HOME}/.viminfo
@@ -31,6 +31,8 @@ noblacklist ${HOME}/Mail
 noblacklist ${HOME}/mail
 noblacklist ${HOME}/postponed
 noblacklist ${HOME}/sent
+
+blacklist /tmp/.X11-unix
 
 include disable-common.inc
 include disable-devel.inc
@@ -52,6 +54,6 @@ novideo
 protocol unix,inet,inet6
 seccomp
 shell none
-writable-run-user
 
 private-dev
+writable-run-user

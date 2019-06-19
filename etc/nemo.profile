@@ -12,13 +12,12 @@ noblacklist ${HOME}/.local/share/nemo
 noblacklist ${HOME}/.local/share/nemo-python
 
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include allow-python2.inc
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 
@@ -36,5 +35,3 @@ protocol unix,inet,inet6
 seccomp
 shell none
 
-noexec ${HOME}
-noexec /tmp

@@ -12,6 +12,7 @@ noblacklist ${HOME}/.local/share/supertuxkart
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-xdg.inc
@@ -46,10 +47,8 @@ disable-mnt
 private-bin supertuxkart
 private-cache
 private-dev
-private-etc resolv.conf,ca-certificates,ssl,hosts,machine-id,xdg,openal,crypto-policies,pki,drirc,system-fips,selinux
+private-etc alternatives,ca-certificates,crypto-policies,drirc,hosts,machine-id,openal,pki,resolv.conf,selinux,ssl,system-fips,xdg
 private-tmp
 private-opt none
 private-srv none
 
-noexec ${HOME}
-noexec /tmp

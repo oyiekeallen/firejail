@@ -6,15 +6,18 @@ include xed.local
 include globals.local
 
 noblacklist ${HOME}/.config/xed
+noblacklist ${HOME}/.python-history
+noblacklist ${HOME}/.python_history
+noblacklist ${HOME}/.pythonhist
+noblacklist ${HOME}/.pythonrc.py
 
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include	allow-python2.inc
+include	allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -42,10 +45,7 @@ tracelog
 
 private-bin xed
 private-dev
-# private-etc fonts
 private-tmp
 
 # xed uses python plugins, memory-deny-write-execute breaks python
 # memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

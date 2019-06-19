@@ -6,20 +6,24 @@ include bsdtar.local
 # Persistent global definitions
 include globals.local
 
+blacklist /tmp/.X11-unix
+
 include disable-common.inc
 # include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
-blacklist /tmp/.X11-unix
-
-hostname bsdtar
+apparmor
 caps.drop all
+hostname bsdtar
 ipc-namespace
+machine-id
 netfilter
 no3d
 nodvd
+nodbus
 nogroups
 nonewprivs
 # noroot
@@ -27,14 +31,15 @@ nosound
 notv
 nou2f
 novideo
-nonewprivs
 protocol unix
 seccomp
 shell none
-
 tracelog
 
 # support compressed archives
-private-bin sh,bash,bsdcat,bsdcpio,bsdtar,gtar,compress,gzip,lzma,xz,bzip2,lbzip2,lzip,lzop,lz4,libarchive
+private-bin bash,bsdcat,bsdcpio,bsdtar,bzip2,compress,gtar,gzip,lbzip2,libarchive,lz4,lzip,lzma,lzop,sh,xz
+private-cache
 private-dev
-private-etc passwd,group,localtime
+private-etc alternatives,group,localtime,passwd
+
+memory-deny-write-execute

@@ -11,6 +11,7 @@ noblacklist ${DOCUMENTS}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-xdg.inc
@@ -33,11 +34,10 @@ novideo
 protocol unix
 seccomp
 shell none
+x11 none
 
 private-bin patch,red
 private-dev
-private-lib
+private-lib libfakeroot
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

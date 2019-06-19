@@ -8,9 +8,15 @@ include globals.local
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
+
+# This profile disables network access
+# In order to enable network access,
+# uncomment the following or put it in your feh.local:
+# include feh-network.inc
 
 caps.drop all
 net none
@@ -31,5 +37,5 @@ shell none
 private-bin feh,jpegexiforient,jpegtran
 private-cache
 private-dev
-private-etc feh
+private-etc alternatives,feh
 private-tmp

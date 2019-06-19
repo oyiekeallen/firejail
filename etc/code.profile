@@ -5,9 +5,19 @@ include code.local
 # Persistent global definitions
 include globals.local
 
+noblacklist ${HOME}/.cargo/config
+noblacklist ${HOME}/.cargo/registry
+noblacklist ${HOME}/.config/Code
+noblacklist ${HOME}/.config/Code - OSS
+noblacklist ${HOME}/.config/git
+noblacklist ${HOME}/.gitconfig
+noblacklist ${HOME}/.git-credentials
+noblacklist ${HOME}/.python-history
+noblacklist ${HOME}/.python_history
+noblacklist ${HOME}/.pythonhist
+noblacklist ${HOME}/.pythonrc.py
 noblacklist ${HOME}/.vscode
 noblacklist ${HOME}/.vscode-oss
-noblacklist ${HOME}/.config/Code
 
 include disable-common.inc
 include disable-passwdmgr.inc

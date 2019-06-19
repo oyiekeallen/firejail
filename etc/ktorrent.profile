@@ -15,6 +15,7 @@ noblacklist ${HOME}/.local/share/ktorrent
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -25,7 +26,7 @@ mkdir ${HOME}/.local/share/ktorrent
 mkfile ${HOME}/.config/ktorrentrc
 mkfile ${HOME}/.kde/share/config/ktorrentrc
 mkfile ${HOME}/.kde4/share/config/ktorrentrc
-whitelist  ${DOWNLOADS}
+whitelist ${DOWNLOADS}
 whitelist ${HOME}/.config/ktorrentrc
 whitelist ${HOME}/.kde/share/apps/ktorrent
 whitelist ${HOME}/.kde/share/config/ktorrentrc
@@ -51,11 +52,9 @@ protocol unix,inet,inet6,netlink
 seccomp
 shell none
 
-private-bin ktorrent,kbuildsycoca4,kdeinit4
+private-bin kbuildsycoca4,kdeinit4,ktorrent
 private-dev
 # private-lib - problems on Arch
 private-tmp
 
 # memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

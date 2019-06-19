@@ -6,19 +6,21 @@ include krita.local
 # Persistent global definitions
 include globals.local
 
+# noexec ${HOME} may break krita, see issue #1953
+ignore noexec ${HOME}
+
 noblacklist ${HOME}/.config/kritarc
 noblacklist ${HOME}/.local/share/krita
 noblacklist ${DOCUMENTS}
 noblacklist ${PICTURES}
 
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include allow-python2.inc
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -45,7 +47,3 @@ shell none
 private-cache
 private-dev
 private-tmp
-
-# noexec ${HOME} may break krita, see issue #1953
-# noexec ${HOME}
-noexec /tmp

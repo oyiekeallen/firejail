@@ -6,7 +6,6 @@ include slack.local
 include globals.local
 
 noblacklist ${HOME}/.config/Slack
-noblacklist ${HOME}/Downloads
 
 include disable-common.inc
 include disable-devel.inc
@@ -14,10 +13,9 @@ include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
-mkdir ${HOME}/.config
 mkdir ${HOME}/.config/Slack
 whitelist ${HOME}/.config/Slack
-whitelist ${HOME}/Downloads
+whitelist ${DOWNLOADS}
 include whitelist-common.inc
 include whitelist-var-common.inc
 
@@ -35,7 +33,7 @@ seccomp
 shell none
 
 disable-mnt
-private-bin slack,locale
+private-bin locale,slack
 private-dev
-private-etc asound.conf,ca-certificates,fonts,group,passwd,pulse,resolv.conf,ssl,ld.so.conf,ld.so.cache,localtime,pki,crypto-policies,machine-id
+private-etc alternatives,asound.conf,ca-certificates,crypto-policies,fonts,group,ld.so.cache,ld.so.conf,localtime,machine-id,passwd,pki,pulse,resolv.conf,ssl
 private-tmp

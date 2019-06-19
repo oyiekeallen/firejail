@@ -9,10 +9,14 @@ include globals.local
 noblacklist ${MUSIC}
 noblacklist ${HOME}/.local/share/rhythmbox
 
+# Allow python (blacklisted by disable-interpreters.inc)
+include allow-python2.inc
+include allow-python3.inc
+
 include disable-common.inc
 include disable-devel.inc
-# rhythmbox is using Python
-#include disable-interpreters.inc
+include disable-exec.inc
+include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-xdg.inc
@@ -22,7 +26,6 @@ include whitelist-var-common.inc
 # apparmor - makes settings immutable
 caps.drop all
 netfilter
-# no3d
 # nodbus - makes settings immutable
 nogroups
 nonewprivs
@@ -35,9 +38,6 @@ seccomp
 shell none
 tracelog
 
-private-bin rhythmbox
+private-bin rhythmbox,rhythmbox-client
 private-dev
 private-tmp
-
-noexec ${HOME}
-noexec /tmp

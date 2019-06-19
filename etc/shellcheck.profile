@@ -11,6 +11,7 @@ noblacklist ${DOCUMENTS}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -34,10 +35,9 @@ novideo
 protocol unix
 seccomp
 shell none
+x11 none
 
 private-dev
 private-tmp
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

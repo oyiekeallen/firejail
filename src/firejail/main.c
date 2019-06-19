@@ -92,6 +92,7 @@ int arg_private_srv = 0;			// private srv directory
 int arg_private_bin = 0;			// private bin directory
 int arg_private_tmp = 0;			// private tmp directory
 int arg_private_lib = 0;			// private lib directory
+int arg_private_cwd = 0;			// private working directory
 int arg_scan = 0;				// arp-scan all interfaces
 int arg_whitelist = 0;				// whitelist command
 int arg_nosound = 0;				// disable sound
@@ -125,6 +126,7 @@ int arg_notv = 0;	// --notv
 int arg_nodvd = 0; // --nodvd
 int arg_nodbus = 0; // -nodbus
 int arg_nou2f = 0; // --nou2f
+int arg_deterministic_exit_code = 0;	// always exit with first child's exit status
 int login_shell = 0;
 
 
@@ -630,6 +632,10 @@ static void run_cmd_and_exit(int i, int argc, char **argv) {
 	else if (strncmp(argv[i], "--get=", 6) == 0) {
 		if (checkcfg(CFG_FILE_TRANSFER)) {
 			logargs(argc, argv);
+			if (arg_private_cwd) {
+				fprintf(stderr, "Error: --get and --private-cwd options are mutually exclusive\n");
+				exit(1);
+			}
 
 			// verify path
 			if ((i + 2) != argc) {
@@ -654,6 +660,10 @@ static void run_cmd_and_exit(int i, int argc, char **argv) {
 	else if (strncmp(argv[i], "--put=", 6) == 0) {
 		if (checkcfg(CFG_FILE_TRANSFER)) {
 			logargs(argc, argv);
+			if (arg_private_cwd) {
+				fprintf(stderr, "Error: --put and --private-cwd options are mutually exclusive\n");
+				exit(1);
+			}
 
 			// verify path
 			if ((i + 3) != argc) {
@@ -684,6 +694,10 @@ static void run_cmd_and_exit(int i, int argc, char **argv) {
 	else if (strncmp(argv[i], "--ls=", 5) == 0) {
 		if (checkcfg(CFG_FILE_TRANSFER)) {
 			logargs(argc, argv);
+			if (arg_private_cwd) {
+				fprintf(stderr, "Error: --ls and --private-cwd options are mutually exclusive\n");
+				exit(1);
+			}
 
 			// verify path
 			if ((i + 2) != argc) {
@@ -866,11 +880,10 @@ static void run_builder(int argc, char **argv) {
 	(void) argc;
 
 	// drop privileges
-	EUID_ROOT();
-	if (setgid(getgid()) < 0)
-		errExit("setgid/getgid");
-	if (setuid(getuid()) < 0)
-		errExit("setuid/getuid");
+	if (setresgid(-1, getgid(), getgid()) != 0)
+		errExit("setresgid");
+	if (setresuid(-1, getuid(), getuid()) != 0)
+		errExit("setresuid");
 
 	assert(getenv("LD_PRELOAD") == NULL);
 	umask(orig_umask);
@@ -908,7 +921,8 @@ int main(int argc, char **argv) {
 
 	// get starting timestamp, process --quiet
 	start_timestamp = getticks();
-	if (check_arg(argc, argv, "--quiet", 1))
+	char *env_quiet = getenv("FIREJAIL_QUIET");
+	if (check_arg(argc, argv, "--quiet", 1) || (env_quiet && strcmp(env_quiet, "yes") == 0))
 		arg_quiet = 1;
 
 	// cleanup at exit
@@ -1522,6 +1536,9 @@ int main(int argc, char **argv) {
 			if (!ppath)
 				errExit("strdup");
 
+			// checking for strange chars in the file name, no globbing
+			invalid_filename(ppath, 0);
+
 			if (*ppath == ':' || access(ppath, R_OK) || is_dir(ppath)) {
 				int has_colon = (*ppath == ':');
 				char *ptr = ppath;
@@ -1623,7 +1640,7 @@ int main(int argc, char **argv) {
 		else if (strcmp(argv[i], "--writable-var") == 0) {
 			arg_writable_var = 1;
 		}
-		else if (strcmp(argv[1], "--keep-var-tmp") == 0) {
+		else if (strcmp(argv[i], "--keep-var-tmp") == 0) {
 		        arg_keep_var_tmp = 1;
 		}
 		else if (strcmp(argv[i], "--writable-run-user") == 0) {
@@ -1769,6 +1786,19 @@ int main(int argc, char **argv) {
 				arg_private_cache = 1;
 			else
 				exit_err_feature("private-cache");
+		}
+		else if (strcmp(argv[i], "--private-cwd") == 0) {
+			cfg.cwd = NULL;
+			arg_private_cwd = 1;
+		}
+		else if (strncmp(argv[i], "--private-cwd=", 14) == 0) {
+			if (*(argv[i] + 14) == '\0') {
+				fprintf(stderr, "Error: invalid private-cwd option\n");
+				exit(1);
+			}
+
+			fs_check_private_cwd(argv[i] + 14);
+			arg_private_cwd = 1;
 		}
 
 		//*************************************
@@ -2271,6 +2301,9 @@ int main(int argc, char **argv) {
 				fprintf(stderr, "Error: please provide a name for sandbox\n");
 				return 1;
 			}
+		}
+		else if (strcmp(argv[i], "--deterministic-exit-code") == 0) {
+			arg_deterministic_exit_code = 1;
 		}
 		else {
 			// double dash - positional params to follow

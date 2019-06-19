@@ -56,8 +56,10 @@ static int have_profile(const char *filename, const char *homedir) {
 	if (arg_debug)
 		printf("checking profile for %s\n", filename);
 
-	// we get strange names here, such as .org.gnom.gedit.desktop, com.uploadedlobster.peek.desktop,
+	// we get strange names here, such as .org.gnome.gedit.desktop, com.uploadedlobster.peek.desktop,
 	// or io.github.Pithos.desktop; extract the word before .desktop
+	// TODO: implement proper fix for #2624 (names like org.gnome.Logs.desktop fall thru
+	// the 'last word' logic and don't get installed to ~/.local/share/applications
 
 	char *tmpfname = strdup(filename);
 	if (!tmpfname)
@@ -227,7 +229,7 @@ void fix_desktop_files(char *homedir) {
 			continue;
 		}
 
-		// try to decide if we need to covert this file
+		// try to decide if we need to convert this file
 		char *change_exec = NULL;
 		int change_dbus = 0;
 
@@ -322,5 +324,3 @@ void fix_desktop_files(char *homedir) {
 	closedir(dir);
 	free(user_apps_dir);
 }
-
-

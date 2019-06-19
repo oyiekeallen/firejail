@@ -11,14 +11,22 @@ noblacklist ${HOME}/.config/enchant
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+mkdir ${HOME}/.config/artha.conf
+mkdir ${HOME}/.config/enchant
+whitelist ${HOME}/.config/artha.conf
+whitelist ${HOME}/.config/enchant
+include whitelist-common.inc
+include whitelist-var-common.inc
+
+apparmor
 caps.drop all
 ipc-namespace
-machine-id
-net none
+# net none - breaks on Ubuntu
 no3d
 # nodbus
 nodvd
@@ -37,10 +45,8 @@ disable-mnt
 private-bin artha,enchant,notify-send
 private-cache
 private-dev
-private-etc fonts
+private-etc alternatives,fonts,machine-id
 private-lib libnotify.so.*
 private-tmp
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

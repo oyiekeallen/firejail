@@ -6,13 +6,16 @@ include github-desktop.local
 # Persistent global definitions
 include globals.local
 
-noblacklist ${HOME}/.gitconfig
 noblacklist ${HOME}/.config/GitHub Desktop
+noblacklist ${HOME}/.config/git
+noblacklist ${HOME}/.gitconfig
+noblacklist ${HOME}/.git-credentials
 
 include disable-common.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 
 caps.drop all
@@ -39,10 +42,7 @@ disable-mnt
 private-cache
 ?HAS_APPIMAGE: ignore private-dev
 private-dev
-# private-etc none
 # private-lib
 private-tmp
 
 # memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

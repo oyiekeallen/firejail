@@ -7,9 +7,11 @@ include bitcoin-qt.local
 include globals.local
 
 noblacklist ${HOME}/.bitcoin
+noblacklist ${HOME}/.config/Bitcoin
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -18,7 +20,6 @@ mkdir ${HOME}/.bitcoin
 mkdir ${HOME}/.config/Bitcoin
 whitelist ${HOME}/.bitcoin
 whitelist ${HOME}/.config/Bitcoin
-
 include whitelist-common.inc
 include whitelist-var-common.inc
 
@@ -42,11 +43,7 @@ tracelog
 private-bin bitcoin-qt
 private-dev
 # Causes problem with loading of libGL.so
-#private-etc fonts,ca-certificates,ssl,pki,crypto-policies
-# Works, but QT complains about OpenSSL a bit.
-#private-lib
+#private-etc alternatives,ca-certificates,crypto-policies,fonts,pki,ssl
 private-tmp
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

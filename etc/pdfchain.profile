@@ -9,6 +9,7 @@ noblacklist ${DOCUMENTS}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -34,9 +35,7 @@ shell none
 
 private-bin pdfchain,pdftk,sh
 private-dev
-private-etc dconf,fonts,gtk-3.0,xdg
+private-etc alternatives,dconf,fonts,gtk-3.0,xdg
 private-tmp
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

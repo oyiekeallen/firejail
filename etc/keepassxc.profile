@@ -16,6 +16,7 @@ noblacklist ${DOCUMENTS}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -36,19 +37,17 @@ nosound
 notv
 nou2f
 novideo
-protocol netlink,unix
+protocol unix,netlink
 seccomp
 shell none
 
-private-bin keepassxc
+private-bin keepassxc,keepassxc-cli,keepassxc-proxy
 private-dev
-private-etc fonts,ld.so.cache,machine-id
+private-etc alternatives,fonts,ld.so.cache,machine-id
 private-tmp
 
 # 2.2.4 crashes on database open
 # memory-deny-write-execute
-noexec ${HOME}
-# noexec /tmp
 
 # Mutex is stored in /tmp by default, which is broken by private-tmp
 join-or-start keepassxc

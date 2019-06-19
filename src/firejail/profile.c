@@ -151,10 +151,15 @@ static int check_disable_u2f(void) {
 	return checkcfg(CFG_BROWSER_DISABLE_U2F) != 0;
 }
 
+static int check_allow_drm(void) {
+	return checkcfg(CFG_BROWSER_ALLOW_DRM) != 0;
+}
+
 Cond conditionals[] = {
 	{"HAS_APPIMAGE", check_appimage},
 	{"HAS_NODBUS", check_nodbus},
 	{"BROWSER_DISABLE_U2F", check_disable_u2f},
+	{"BROWSER_ALLOW_DRM", check_allow_drm},
 	{ NULL, NULL }
 };
 
@@ -241,9 +246,6 @@ error:
 // return 1 if the command is to be added to the linked list of profile commands
 // return 0 if the command was already executed inside the function
 int profile_check_line(char *ptr, int lineno, const char *fname) {
-#ifdef HAVE_WHITELIST
-	static int whitelist_warning_printed = 0;
-#endif
 	EUID_ASSERT();
 
 	// check and process conditional profile lines
@@ -336,7 +338,7 @@ int profile_check_line(char *ptr, int lineno, const char *fname) {
 		arg_private = 1;
 		return 0;
 	}
-	if (strncmp(ptr, "private-home ", 13) == 0) {
+	else if (strncmp(ptr, "private-home ", 13) == 0) {
 #ifdef HAVE_PRIVATE_HOME
 		if (checkcfg(CFG_PRIVATE_HOME)) {
 			if (cfg.home_private_keep) {
@@ -349,6 +351,16 @@ int profile_check_line(char *ptr, int lineno, const char *fname) {
 		else
 			warning_feature_disabled("private-home");
 #endif
+		return 0;
+	}
+	else if (strcmp(ptr, "private-cwd") == 0) {
+		cfg.cwd = NULL;
+		arg_private_cwd = 1;
+		return 0;
+	}
+	else if (strncmp(ptr, "private-cwd ", 12) == 0) {
+		fs_check_private_cwd(ptr + 12);
+		arg_private_cwd = 1;
 		return 0;
 	}
 	else if (strcmp(ptr, "allusers") == 0) {
@@ -858,8 +870,7 @@ int profile_check_line(char *ptr, int lineno, const char *fname) {
 			cfg.dns4 = dns;
 		else {
 			fprintf(stderr, "Error: up to 4 DNS servers can be specified\n");
-			free(dns);
-			return 1;
+			exit(1);
 		}
 		return 0;
 	}
@@ -1300,6 +1311,11 @@ int profile_check_line(char *ptr, int lineno, const char *fname) {
 		return 0;
 	}
 
+	if (strcmp(ptr, "deterministic-exit-code") == 0) {
+		arg_deterministic_exit_code = 1;
+		return 0;
+	}
+
 	// rest of filesystem
 	if (strncmp(ptr, "blacklist ", 10) == 0)
 		ptr += 10;
@@ -1314,6 +1330,7 @@ int profile_check_line(char *ptr, int lineno, const char *fname) {
 			ptr += 10;
 		}
 		else {
+			static int whitelist_warning_printed = 0;
 			if (!whitelist_warning_printed) {
 				warning_feature_disabled("whitelist");
 				whitelist_warning_printed = 1;

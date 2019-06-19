@@ -21,89 +21,13 @@
 #define FIREJAIL_H
 #include "../include/common.h"
 #include "../include/euid_common.h"
+#include "../include/rundefs.h"
 #include <stdarg.h>
 #include <sys/stat.h>
 
 // debug restricted shell
 //#define DEBUG_RESTRICTED_SHELL
 
-// filesystem
-#define RUN_FIREJAIL_BASEDIR	"/run"
-#define RUN_FIREJAIL_DIR	"/run/firejail"
-#define RUN_FIREJAIL_APPIMAGE_DIR	"/run/firejail/appimage"
-#define RUN_FIREJAIL_NAME_DIR	"/run/firejail/name" // also used in src/lib/pid.c - todo: move it in a common place
-#define RUN_FIREJAIL_LIB_DIR		"/run/firejail/lib"
-#define RUN_FIREJAIL_X11_DIR	"/run/firejail/x11"
-#define RUN_FIREJAIL_NETWORK_DIR	"/run/firejail/network"
-#define RUN_FIREJAIL_BANDWIDTH_DIR	"/run/firejail/bandwidth"
-#define RUN_FIREJAIL_PROFILE_DIR		"/run/firejail/profile"
-#define RUN_NETWORK_LOCK_FILE	"/run/firejail/firejail-network.lock"
-#define RUN_DIRECTORY_LOCK_FILE	"/run/firejail/firejail-run.lock"
-#define RUN_RO_DIR	"/run/firejail/firejail.ro.dir"
-#define RUN_RO_FILE	"/run/firejail/firejail.ro.file"
-#define RUN_MNT_DIR	"/run/firejail/mnt"	// a tmpfs is mounted on this directory before any of the files below are created
-#define RUN_CGROUP_CFG	"/run/firejail/mnt/cgroup"
-#define RUN_CPU_CFG	"/run/firejail/mnt/cpu"
-#define RUN_GROUPS_CFG	"/run/firejail/mnt/groups"
-#define RUN_PROTOCOL_CFG	"/run/firejail/mnt/protocol"
-#define RUN_NONEWPRIVS_CFG	"/run/firejail/mnt/nonewprivs"
-#define RUN_HOME_DIR	"/run/firejail/mnt/home"
-#define RUN_ETC_DIR	"/run/firejail/mnt/etc"
-#define RUN_OPT_DIR	"/run/firejail/mnt/opt"
-#define RUN_SRV_DIR	"/run/firejail/mnt/srv"
-#define RUN_BIN_DIR	"/run/firejail/mnt/bin"
-#define RUN_PULSE_DIR	"/run/firejail/mnt/pulse"
-#define RUN_LIB_DIR	"/run/firejail/mnt/lib"
-#define RUN_LIB_FILE	"/run/firejail/mnt/libfiles"
-#define RUN_DNS_ETC	"/run/firejail/mnt/dns-etc"
-
-#define RUN_SECCOMP_LIST	"/run/firejail/mnt/seccomp.list"	// list of seccomp files installed
-#define RUN_SECCOMP_PROTOCOL	"/run/firejail/mnt/seccomp.protocol"	// protocol filter
-#define RUN_SECCOMP_CFG	"/run/firejail/mnt/seccomp"			// configured filter
-#define RUN_SECCOMP_32	"/run/firejail/mnt/seccomp.32"		// 32bit arch filter installed on 64bit architectures
-#define RUN_SECCOMP_MDWX	"/run/firejail/mnt/seccomp.mdwx"		// filter for memory-deny-write-execute
-#define RUN_SECCOMP_BLOCK_SECONDARY	"/run/firejail/mnt/seccomp.block_secondary"	// secondary arch blocking filter
-#define RUN_SECCOMP_POSTEXEC	"/run/firejail/mnt/seccomp.postexec"		// filter for post-exec library
-#define PATH_SECCOMP_DEFAULT (LIBDIR "/firejail/seccomp")			// default filter built during make
-#define PATH_SECCOMP_DEFAULT_DEBUG (LIBDIR "/firejail/seccomp.debug")	// default filter built during make
-#define PATH_SECCOMP_32 (LIBDIR "/firejail/seccomp.32")			// 32bit arch filter built during make
-#define PATH_SECCOMP_MDWX (LIBDIR "/firejail/seccomp.mdwx")		// filter for memory-deny-write-execute built during make
-#define PATH_SECCOMP_BLOCK_SECONDARY (LIBDIR "/firejail/seccomp.block_secondary")	// secondary arch blocking filter built during make
-
-
-#define RUN_DEV_DIR		"/run/firejail/mnt/dev"
-#define RUN_DEVLOG_FILE	"/run/firejail/mnt/devlog"
-
-#define RUN_WHITELIST_X11_DIR	"/run/firejail/mnt/orig-x11"
-#define RUN_WHITELIST_HOME_DIR	"/run/firejail/mnt/orig-home"	// default home directory masking
-#define RUN_WHITELIST_RUN_DIR	"/run/firejail/mnt/orig-run"	// default run directory masking
-#define RUN_WHITELIST_HOME_USER_DIR	"/run/firejail/mnt/orig-home-user"	// home directory whitelisting
-#define RUN_WHITELIST_TMP_DIR	"/run/firejail/mnt/orig-tmp"
-#define RUN_WHITELIST_MEDIA_DIR	"/run/firejail/mnt/orig-media"
-#define RUN_WHITELIST_MNT_DIR	"/run/firejail/mnt/orig-mnt"
-#define RUN_WHITELIST_VAR_DIR	"/run/firejail/mnt/orig-var"
-#define RUN_WHITELIST_DEV_DIR	"/run/firejail/mnt/orig-dev"
-#define RUN_WHITELIST_OPT_DIR	"/run/firejail/mnt/orig-opt"
-#define RUN_WHITELIST_SRV_DIR   "/run/firejail/mnt/orig-srv"
-#define RUN_WHITELIST_ETC_DIR   "/run/firejail/mnt/orig-etc"
-#define RUN_WHITELIST_SHARE_DIR   "/run/firejail/mnt/orig-share"
-#define RUN_WHITELIST_MODULE_DIR   "/run/firejail/mnt/orig-module"
-
-#define RUN_XAUTHORITY_FILE	"/run/firejail/mnt/.Xauthority"
-#define RUN_XAUTHORITY_SEC_FILE	"/run/firejail/mnt/sec.Xauthority"
-#define RUN_ASOUNDRC_FILE	"/run/firejail/mnt/.asoundrc"
-#define RUN_HOSTNAME_FILE	"/run/firejail/mnt/hostname"
-#define RUN_HOSTS_FILE	"/run/firejail/mnt/hosts"
-#define RUN_RESOLVCONF_FILE	"/run/firejail/mnt/resolv.conf"
-#define RUN_MACHINEID	"/run/firejail/mnt/machine-id"
-#define RUN_LDPRELOAD_FILE	"/run/firejail/mnt/ld.so.preload"
-#define RUN_UTMP_FILE		"/run/firejail/mnt/utmp"
-#define RUN_PASSWD_FILE		"/run/firejail/mnt/passwd"
-#define RUN_GROUP_FILE		"/run/firejail/mnt/group"
-#define RUN_FSLOGGER_FILE		"/run/firejail/mnt/fslogger"
-#define RUN_UMASK_FILE		"/run/firejail/mnt/umask"
-#define RUN_OVERLAY_ROOT	"/run/firejail/mnt/oroot"
-#define RUN_READY_FOR_JOIN 	"/run/firejail/mnt/ready-for-join"
 
 
 // profiles
@@ -211,6 +135,7 @@ typedef struct profile_entry_t {
 	unsigned etc_dir:1;	// whitelist in /etc directory
 	unsigned share_dir:1;	// whitelist in /usr/share directory
 	unsigned module_dir:1;	// whitelist in /sys/module directory
+	unsigned run_dir:1;	// whitelist in /run/user/$uid directory
 }ProfileEntry;
 
 typedef struct config_t {
@@ -358,6 +283,7 @@ extern int arg_private_srv;	// private srv directory
 extern int arg_private_bin;	// private bin directory
 extern int arg_private_tmp;	// private tmp directory
 extern int arg_private_lib;	// private lib directory
+extern int arg_private_cwd;	// private working directory
 extern int arg_scan;		// arp-scan all interfaces
 extern int arg_whitelist;	// whitelist command
 extern int arg_nosound;	// disable sound
@@ -390,6 +316,7 @@ extern int arg_notv;	// --notv
 extern int arg_nodvd;	// --nodvd
 extern int arg_nou2f;   // --nou2f
 extern int arg_nodbus; // -nodbus
+extern int arg_deterministic_exit_code;	// always exit with first child's exit status
 
 extern int login_shell;
 extern int parent_to_child_fds[2];
@@ -437,16 +364,23 @@ void preproc_mount_mnt_dir(void);
 void preproc_clean_run(void);
 
 // fs.c
+typedef enum {
+	BLACKLIST_FILE,
+	BLACKLIST_NOLOG,
+	MOUNT_READONLY,
+	MOUNT_TMPFS,
+	MOUNT_NOEXEC,
+	MOUNT_RDWR,
+	OPERATION_MAX
+} OPERATION;
+
 // blacklist files or directories by mounting empty files on top of them
 void fs_blacklist(void);
 // mount a writable tmpfs
 void fs_tmpfs(const char *dir, unsigned check_owner);
-// remount a directory read-only
-void fs_rdonly(const char *dir);
-void fs_rdonly_rec(const char *dir);
-// remount a directory noexec, nodev and nosuid
-void fs_noexec(const char *dir);
-void fs_noexec_rec(const char *dir);
+// remount noexec/nodev/nosuid or read-only or read-write
+void fs_remount(const char *dir, OPERATION op, unsigned check_mnt);
+void fs_remount_rec(const char *dir, OPERATION op, unsigned check_mnt);
 // mount /proc and /sys directories
 void fs_proc_sys_dev_boot(void);
 // build a basic read-only filesystem
@@ -519,6 +453,7 @@ void logsignal(int s);
 void logmsg(const char *msg);
 void logargs(int argc, char **argv) ;
 void logerr(const char *msg);
+void set_nice(int inc);
 int copy_file(const char *srcname, const char *destname, uid_t uid, gid_t gid, mode_t mode);
 void copy_file_as_user(const char *srcname, const char *destname, uid_t uid, gid_t gid, mode_t mode);
 void copy_file_from_user_to_root(const char *srcname, const char *destname, uid_t uid, gid_t gid, mode_t mode);
@@ -595,6 +530,8 @@ void fs_private(void);
 void fs_private_homedir(void);
 // check new private home directory (--private= option) - exit if it fails
 void fs_check_private_dir(void);
+// check new private working directory (--private-cwd= option) - exit if it fails
+void fs_check_private_cwd(const char *dir);
 void fs_private_home_list(void);
 
 
@@ -776,6 +713,7 @@ enum {
 	CFG_ARP_PROBES,
 	CFG_XPRA_ATTACH,
 	CFG_BROWSER_DISABLE_U2F,
+	CFG_BROWSER_ALLOW_DRM,
 	CFG_PRIVATE_LIB,
 	CFG_APPARMOR,
 	CFG_DBUS,
@@ -855,6 +793,6 @@ void set_x11_run_file(pid_t pid, int display);
 void set_profile_run_file(pid_t pid, const char *fname);
 
 // dbus.c
-void dbus_session_disable(void);
+void dbus_disable(void);
 
 #endif

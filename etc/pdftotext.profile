@@ -7,8 +7,6 @@ include globals.local
 
 noblacklist ${DOCUMENTS}
 
-blacklist /tmp/.X11-unix
-
 include disable-common.inc
 include disable-devel.inc
 include disable-interpreters.inc
@@ -16,6 +14,8 @@ include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-xdg.inc
 
+whitelist ${DOCUMENTS}
+whitelist ${DOWNLOADS}
 include whitelist-var-common.inc
 
 caps.drop all
@@ -35,8 +35,9 @@ protocol unix
 seccomp
 shell none
 tracelog
+x11 none
 
 private-bin pdftotext
 private-dev
-private-etc none
+private-etc alternatives
 private-tmp

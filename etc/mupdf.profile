@@ -10,6 +10,7 @@ noblacklist ${DOCUMENTS}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -35,10 +36,10 @@ seccomp
 shell none
 tracelog
 
-# private-bin mupdf,sh,tempfile,rm
+# private-bin mupdf,rm,sh,tempfile
 private-dev
-private-etc fonts
+private-etc alternatives,fonts
 private-tmp
 
-# mupdf will never write anything
+memory-deny-write-execute
 read-only ${HOME}

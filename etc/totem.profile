@@ -6,6 +6,9 @@ include totem.local
 # Persistent global definitions
 include globals.local
 
+# Allow lua (required for youtube video)
+include allow-lua.inc
+
 noblacklist ${HOME}/.config/totem
 noblacklist ${HOME}/.local/share/totem
 noblacklist ${MUSIC}
@@ -13,6 +16,7 @@ noblacklist ${VIDEOS}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -36,8 +40,6 @@ private-bin totem
 # totem needs access to ~/.cache/tracker or it exits
 #private-cache
 private-dev
-# private-etc fonts,machine-id,pulse,asound.conf,ca-certificates,ssl,pki,crypto-policies
+# private-etc alternatives,asound.conf,ca-certificates,crypto-policies,fonts,machine-id,pki,pulse,ssl
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

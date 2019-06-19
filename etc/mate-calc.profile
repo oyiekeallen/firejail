@@ -10,16 +10,18 @@ noblacklist ${HOME}/.config/mate-calc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+mkdir ${HOME}/.cache/mate-calc
+mkdir ${HOME}/.config/caja
+mkdir ${HOME}/.config/mate-menu
 whitelist ${HOME}/.cache/mate-calc
 whitelist ${HOME}/.config/caja
-whitelist ${HOME}/.config/gtk-3.0
-whitelist ${HOME}/.config/dconf
 whitelist ${HOME}/.config/mate-menu
-whitelist ${HOME}/.themes
+include whitelist-common.inc
 
 caps.drop all
 net none
@@ -39,11 +41,9 @@ shell none
 
 disable-mnt
 private-bin mate-calc,mate-calculator
-private-etc fonts
+private-etc alternatives,dconf,fonts,gtk-3.0
 private-dev
 private-opt none
 private-tmp
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

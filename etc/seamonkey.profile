@@ -18,6 +18,8 @@ include disable-programs.inc
 
 mkdir ${HOME}/.cache/mozilla
 mkdir ${HOME}/.mozilla
+mkdir ${HOME}/.pki
+mkdir ${HOME}/.local/share/pki
 whitelist ${DOWNLOADS}
 whitelist ${HOME}/.cache/gnome-mplayer/plugin
 whitelist ${HOME}/.cache/mozilla
@@ -50,4 +52,4 @@ seccomp
 tracelog
 
 disable-mnt
-# private-etc passwd,group,hostname,hosts,localtime,nsswitch.conf,resolv.conf,gtk-2.0,pango,fonts,iceweasel,firefox,adobe,mime.types,mailcap,asound.conf,pulse,machine-id,ca-certificates,ssl,pki,crypto-policies
+# private-etc adobe,alternatives,asound.conf,ca-certificates,crypto-policies,firefox,fonts,group,gtk-2.0,hostname,hosts,iceweasel,localtime,machine-id,mailcap,mime.types,nsswitch.conf,pango,passwd,pki,pulse,resolv.conf,ssl

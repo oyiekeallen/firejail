@@ -13,6 +13,7 @@ noblacklist ${HOME}/.local/share/QuiteRss
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -21,6 +22,8 @@ mkdir ${HOME}/.cache/QuiteRss
 mkdir ${HOME}/.config/QuiteRss
 mkdir ${HOME}/.local/share/data
 mkdir ${HOME}/.local/share/data/QuiteRss
+mkdir ${HOME}/.local/share/QuiteRss
+mkfile ${HOME}/quiterssfeeds.opml
 whitelist ${HOME}/.cache/QuiteRss
 whitelist ${HOME}/.config/QuiteRss/
 whitelist ${HOME}/.config/QuiteRssrc
@@ -47,7 +50,5 @@ tracelog
 disable-mnt
 private-bin quiterss
 private-dev
-# private-etc X11,ssl,pki,ca-certificates,crypto-policies
+# private-etc alternatives,ca-certificates,crypto-policies,pki,ssl,X11
 
-noexec ${HOME}
-noexec /tmp

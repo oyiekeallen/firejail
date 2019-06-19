@@ -32,8 +32,9 @@ ignore private-tmp
 # machine-id breaks audio in browsers; enable it when sound is not required
 # machine-id
 read-only ${HOME}/.config/mimeapps.list
-# writable-run-user is needed for signing and encrypting emails
+# writable-run-user and dbus are needed by enigmail
 writable-run-user
+ignore nodbus
 
 # If you want to read local mail stored in /var/mail, add the following to thunderbird.local:
 # noblacklist /var/mail
@@ -42,6 +43,4 @@ writable-run-user
 
 # allow browsers
 # Redirect
-# Uncomment if you use enigmail
-# ignore nodbus
-include firefox.profile
+include firefox-common.profile

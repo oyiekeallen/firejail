@@ -7,7 +7,6 @@ include mendeleydesktop.local
 include globals.local
 
 noblacklist ${DOCUMENTS}
-noblacklist ${DOWNLOADS}
 noblacklist ${HOME}/.cache/Mendeley Ltd.
 noblacklist ${HOME}/.config/Mendeley Ltd.
 noblacklist ${HOME}/.local/share/Mendeley Ltd.
@@ -16,13 +15,12 @@ noblacklist ${HOME}/.pki
 noblacklist ${HOME}/.local/share/pki
 
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include allow-python2.inc
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -45,9 +43,7 @@ shell none
 tracelog
 
 disable-mnt
-private-bin mendeleydesktop,python*,env,gconftool-2,which,sh,ln,cat,update-desktop-database
+private-bin cat,env,gconftool-2,ln,mendeleydesktop,python*,sh,update-desktop-database,which
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

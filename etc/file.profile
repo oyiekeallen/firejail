@@ -10,11 +10,15 @@ include globals.local
 blacklist /tmp/.X11-unix
 
 include disable-common.inc
+include disable-exec.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+apparmor
 caps.drop all
 hostname file
+ipc-namespace
+machine-id
 net none
 no3d
 nodbus
@@ -34,9 +38,7 @@ x11 none
 #private-bin file
 private-cache
 private-dev
-private-etc magic.mgc,magic,localtime
+private-etc alternatives,localtime,magic,magic.mgc
 private-lib libarchive.so.*,libfakeroot,libmagic.so.*
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

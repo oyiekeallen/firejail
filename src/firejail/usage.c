@@ -66,6 +66,7 @@ static char *usage_str =
 #ifdef HAVE_NETWORK
 	"    --defaultgw=address - configure default gateway.\n"
 #endif
+	"    --deterministic-exit-code - always exit with first child's status code.\n"
 	"    --dns=address - set DNS server.\n"
 	"    --dns.print=name|pid - print DNS configuration.\n"
 	"    --env=name=value - set environment variable.\n"
@@ -103,7 +104,7 @@ static char *usage_str =
 	"    --machine-id - preserve /etc/machine-id\n"
 #ifdef HAVE_SECCOMP
 	"    --memory-deny-write-execute - seccomp filter to block attempts to create\n"
-	"\tmemory mappings  that are both writable and executable.\n"
+	"\tmemory mappings that are both writable and executable.\n"
 #endif
 #ifdef HAVE_NETWORK
 	"    --mtu=number - set interface MTU.\n"
@@ -140,7 +141,7 @@ static char *usage_str =
 	"    --noautopulse - disable automatic ~/.config/pulse init.\n"
 	"    --novideo - disable video devices.\n"
 	"    --nou2f - disable U2F devices.\n"
-	"    --nowhitelist=filename - disable whitelist for file or directory .\n"
+	"    --nowhitelist=filename - disable whitelist for file or directory.\n"
 	"    --output=logfile - stdout logging and log rotation.\n"
 	"    --output-stderr=logfile - stdout and stderr logging and log rotation.\n"
 	"    --overlay - mount a filesystem overlay on top of the current filesystem.\n"
@@ -162,6 +163,8 @@ static char *usage_str =
 	"    --private-etc=file,directory - build a new /etc in a temporary\n"
 	"\tfilesystem, and copy the files and directories in the list.\n"
 	"    --private-tmp - mount a tmpfs on top of /tmp directory.\n"
+	"    --private-cwd - do not inherit working directory inside jail.\n"
+	"    --private-cwd=directory - set working directory inside jail.\n"
 	"    --private-opt=file,directory - build a new /opt in a temporary filesystem.\n"
 	"    --private-srv=file,directory - build a new /srv in a temporary filesystem.\n"
 	"    --profile=filename|profile_name - use a custom profile.\n"
@@ -174,9 +177,9 @@ static char *usage_str =
 	"\tcontainer.\n"
 #endif
 	"    --quiet - turn off Firejail's output.\n"
-	"    --read-only=filename - set directory or file read-only..\n"
+	"    --read-only=filename - set directory or file read-only.\n"
 	"    --read-write=filename - set directory or file read-write.\n"
-	"    --rlimit-as=number - set the maximum size of the process's virtual memory\n"
+	"    --rlimit-as=number - set the maximum size of the process's virtual memory.\n"
 	"\t(address space) in bytes.\n"
 	"    --rlimit-cpu=number - set the maximum CPU time in seconds.\n"
 	"    --rlimit-fsize=number - set the maximum file size that can be created\n"

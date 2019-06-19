@@ -6,6 +6,9 @@ include midori.local
 # Persistent global definitions
 include globals.local
 
+# noexec ${HOME} breaks DRM binaries.
+?BROWSER_ALLOW_DRM: ignore noexec ${HOME}
+
 noblacklist ${HOME}/.config/midori
 noblacklist ${HOME}/.local/share/midori
 # noblacklist ${HOME}/.local/share/webkit
@@ -15,6 +18,7 @@ noblacklist ${HOME}/.local/share/pki
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-programs.inc
 

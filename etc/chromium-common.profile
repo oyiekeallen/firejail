@@ -6,11 +6,15 @@ include chromium-common.local
 # already included by caller profile
 #include globals.local
 
+# noexec ${HOME} breaks DRM binaries.
+?BROWSER_ALLOW_DRM: ignore noexec ${HOME}
+
 noblacklist ${HOME}/.pki
 noblacklist ${HOME}/.local/share/pki
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-programs.inc
 
@@ -23,10 +27,9 @@ include whitelist-common.inc
 include whitelist-var-common.inc
 
 apparmor
-caps.keep sys_chroot,sys_admin
+caps.keep sys_admin,sys_chroot
 netfilter
-# Breaks Gnome connector - disable if you use that
-nodbus
+# nodbus - prevents access to passwords saved in GNOME Keyring and KWallet, also breaks Gnome connector
 nodvd
 nogroups
 notv
@@ -37,9 +40,5 @@ disable-mnt
 private-dev
 # private-tmp - problems with multiple browser sessions
 
-# breaks DRM binaries
-#noexec ${HOME}
-noexec /tmp
-
 # the file dialog needs to work without d-bus
-env NO_CHROME_KDE_FILE_DIALOG=1
+?HAS_NODBUS: env NO_CHROME_KDE_FILE_DIALOG=1

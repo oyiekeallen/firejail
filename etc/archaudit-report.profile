@@ -6,17 +6,15 @@ include archaudit-report.local
 # Persistent global definitions
 include globals.local
 
-
 noblacklist /var/lib/pacman
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-xdg.inc
-
-include whitelist-common.inc
 
 caps.drop all
 ipc-namespace
@@ -35,10 +33,8 @@ shell none
 
 disable-mnt
 private
-private-bin archaudit-report,arch-audit,bash,cat,comm,cut,date,fold,grep,pacman,pactree,rm,sed,sort,whoneeds
+private-bin arch-audit,archaudit-report,bash,cat,comm,cut,date,fold,grep,pacman,pactree,rm,sed,sort,whoneeds
 #private-dev
 private-tmp
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

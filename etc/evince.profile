@@ -11,6 +11,7 @@ noblacklist ${DOCUMENTS}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -20,9 +21,10 @@ include whitelist-var-common.inc
 
 caps.drop all
 machine-id
-# net none breaks AppArmor on Ubuntu systems
+# net none - breaks AppArmor on Ubuntu systems
 netfilter
 no3d
+# nodbus might break two-page-view on some systems
 nodbus
 nodvd
 nogroups
@@ -38,13 +40,10 @@ shell none
 tracelog
 
 private-bin evince,evince-previewer,evince-thumbnailer
+private-cache
 private-dev
-private-etc fonts,machine-id
-
-private-lib evince,gdk-pixbuf-2.*,gio,gvfs/libgvfscommon.so,libdjvulibre.so.*,libgconf-2.so.*,libpoppler-glib.so.*,librsvg-2.so.*,gconv
-
+private-etc alternatives,fonts,group,machine-id,passwd
+private-lib evince,gconv,gdk-pixbuf-2.*,gio,gvfs/libgvfscommon.so,libdjvulibre.so.*,libgconf-2.so.*,libpoppler-glib.so.*,librsvg-2.so.*,libspectre.so.*
 private-tmp
 
-#memory-deny-write-execute - breaks application on Archlinux, issue 1803
-noexec ${HOME}
-noexec /tmp
+# memory-deny-write-execute - might break application (https://github.com/netblue30/firejail/issues/1803)

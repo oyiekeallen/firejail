@@ -11,6 +11,7 @@ noblacklist ${DOCUMENTS}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -18,10 +19,11 @@ include disable-xdg.inc
 
 include whitelist-var-common.inc
 
+apparmor
 caps.drop all
-net none
-no3d
-nodbus
+ipc-namespace
+netfilter
+# nodbus - breaks proxy creation
 nodvd
 nogroups
 nonewprivs
@@ -30,15 +32,14 @@ nosound
 notv
 nou2f
 novideo
-protocol unix
+protocol unix,inet,inet6,netlink
 seccomp
 shell none
 
 private-bin sqlitebrowser
 private-cache
 private-dev
+private-etc alternatives,ca-certificates,crypto-policies,fonts,group,machine-id,passwd,pki,ssl
 private-tmp
 
-# memory-deny-write-execute - breaks on Arch
-noexec ${HOME}
-noexec /tmp
+memory-deny-write-execute

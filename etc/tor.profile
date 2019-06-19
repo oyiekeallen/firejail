@@ -19,12 +19,13 @@ include globals.local
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-xdg.inc
 
-caps.keep setuid,setgid,net_bind_service,dac_read_search
+caps.keep dac_read_search,net_bind_service,setgid,setuid
 ipc-namespace
 machine-id
 netfilter
@@ -39,15 +40,12 @@ novideo
 protocol unix,inet,inet6
 seccomp
 shell none
-writable-var
 
 disable-mnt
 private
-private-bin tor,bash
+private-bin bash,tor
 private-cache
 private-dev
-private-etc tor,passwd,ca-certificates,ssl,pki,crypto-policies
+private-etc alternatives,ca-certificates,crypto-policies,passwd,pki,ssl,tor
 private-tmp
-
-noexec ${HOME}
-noexec /tmp
+writable-var

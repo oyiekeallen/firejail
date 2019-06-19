@@ -4,31 +4,42 @@ quiet
 # Persistent local customizations
 include strings.local
 # Persistent global definitions
-# added by included default.profile
-#include globals.local
+include globals.local
 
-blacklist /tmp/.X11-unix
+include disable-common.inc
+include disable-devel.inc
+include disable-exec.inc
+include disable-interpreters.inc
+include disable-passwdmgr.inc
+include disable-programs.inc
 
-ignore noroot
+apparmor
+caps.drop all
+ipc-namespace
+machine-id
 net none
 no3d
 nodbus
 nodvd
+nogroups
+nonewprivs
+#noroot
 nosound
 notv
 nou2f
 novideo
+protocol unix
+seccomp
 shell none
 tracelog
+x11 none
 
+#private
 private-bin strings
 private-cache
 private-dev
-private-etc none
-private-lib
+private-etc alternatives
+private-lib libfakeroot
+private-tmp
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp
-
-include default.profile

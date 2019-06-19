@@ -31,7 +31,11 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <limits.h>
+
 #include <fcntl.h>
+#ifndef O_PATH
+# define O_PATH 010000000
+#endif
 
 
 // Parse the DISPLAY environment variable and return a display number.
@@ -1099,7 +1103,7 @@ void x11_xorg(void) {
 	}
 
 	// temporarily mount a tempfs on top of /tmp directory
-	if (mount("tmpfs", "/tmp", "tmpfs", MS_NOSUID | MS_STRICTATIME | MS_REC,  "mode=1777,gid=0") < 0)
+	if (mount("tmpfs", "/tmp", "tmpfs", MS_NOSUID | MS_STRICTATIME,  "mode=1777,gid=0") < 0)
 		errExit("mounting /tmp");
 
 	// create the temporary .Xauthority file
@@ -1165,7 +1169,7 @@ void x11_xorg(void) {
 	umount("/tmp");
 
 	// remount RUN_XAUTHORITY_SEC_FILE noexec, nodev, nosuid
-	fs_noexec(RUN_XAUTHORITY_SEC_FILE);
+	fs_remount(RUN_XAUTHORITY_SEC_FILE, MOUNT_NOEXEC, 0);
 
 	// Ensure there is already a file in the usual location, so that bind-mount below will work.
 	char *dest;
@@ -1198,9 +1202,11 @@ void x11_xorg(void) {
 	if (fstatvfs(fd, &vfs) == -1)
 		errExit("fstatvfs");
 	if ((vfs.f_flag & MS_RDONLY) == MS_RDONLY)
-		fs_rdonly(RUN_XAUTHORITY_SEC_FILE);
+		fs_remount(RUN_XAUTHORITY_SEC_FILE, MOUNT_READONLY, 0);
 
 	// mount via the link in /proc/self/fd
+	if (arg_debug)
+		printf("Mounting %s on %s\n", RUN_XAUTHORITY_SEC_FILE, dest);
 	char *proc;
 	if (asprintf(&proc, "/proc/self/fd/%d", fd) == -1)
 		errExit("asprintf");
@@ -1253,7 +1259,7 @@ void fs_x11(void) {
 
 	// This directory must be mode 1777, or Xlib will barf.
 	if (mount("tmpfs", "/tmp/.X11-unix", "tmpfs",
-		MS_NOSUID | MS_NOEXEC | MS_NODEV | MS_STRICTATIME | MS_REC,
+		MS_NOSUID | MS_NOEXEC | MS_NODEV | MS_STRICTATIME,
 		"mode=1777,uid=0,gid=0") < 0)
 		errExit("mounting tmpfs on /tmp/.X11-unix");
 	fs_logger("tmpfs /tmp/.X11-unix");

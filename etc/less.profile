@@ -5,23 +5,36 @@ quiet
 # Persistent local customizations
 include less.local
 # Persistent global definitions
-# added by included default.profile
-#include globals.local
+include globals.local
 
-blacklist /tmp/.X11-unix
+noblacklist ${HOME}/.lesshst
 
-ignore noroot
+include disable-common.inc
+include disable-devel.inc
+include disable-exec.inc
+include disable-interpreters.inc
+include disable-passwdmgr.inc
+include disable-programs.inc
+
+apparmor
+caps.drop all
+ipc-namespace
+machine-id
 net none
 no3d
 nodbus
 nodvd
+nonewprivs
+#noroot
 nosound
 notv
 nou2f
 novideo
+protocol unix
+seccomp
 shell none
 tracelog
-writable-var-log
+x11 none
 
 # The user can have a custom coloring script configured in ${HOME}/.lessfilter.
 # Enable private-bin and private-lib if you are not using any filter.
@@ -29,9 +42,6 @@ writable-var-log
 # private-lib
 private-cache
 private-dev
+writable-var-log
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp
-
-include default.profile

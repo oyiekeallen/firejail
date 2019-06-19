@@ -11,17 +11,16 @@ noblacklist ${HOME}/.cache/nheko/nheko
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
 mkdir ${HOME}/.config/nheko
 mkdir ${HOME}/.cache/nheko/nheko
-
 whitelist ${HOME}/.config/nheko
 whitelist ${HOME}/.cache/nheko/nheko
 whitelist ${DOWNLOADS}
-
 include whitelist-common.inc
 
 caps.drop all
@@ -40,5 +39,3 @@ disable-mnt
 private-bin nheko
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

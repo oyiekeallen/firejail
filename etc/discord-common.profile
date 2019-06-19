@@ -12,6 +12,8 @@ include disable-passwdmgr.inc
 include disable-programs.inc
 
 whitelist ${DOWNLOADS}
+include whitelist-common.inc
+include whitelist-var-common.inc
 
 caps.drop all
 netfilter
@@ -25,10 +27,9 @@ novideo
 protocol unix,inet,inet6,netlink
 seccomp
 
-private-bin sh,xdg-mime,tr,sed,echo,head,cut,xdg-open,grep,egrep,bash,zsh
+private-bin bash,cut,echo,egrep,grep,head,sed,sh,tr,xdg-mime,xdg-open,zsh
 private-dev
-private-etc fonts,machine-id,localtime,ld.so.cache,ca-certificates,ssl,pki,crypto-policies,resolv.conf
+private-etc alternatives,ca-certificates,crypto-policies,fonts,group,ld.so.cache,localtime,login.defs,machine-id,password,pki,resolv.conf,ssl
 private-tmp
 
-noexec ${HOME}
 noexec /tmp

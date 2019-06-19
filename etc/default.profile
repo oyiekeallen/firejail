@@ -10,13 +10,17 @@ include globals.local
 
 include disable-common.inc
 # include disable-devel.inc
+# include disable-exec.inc
 # include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
-#include disable-xdg.inc
+# include disable-xdg.inc
 
+# apparmor
 caps.drop all
 # ipc-namespace
+# machine-id
+# net none
 netfilter
 # no3d
 # nodbus
@@ -31,16 +35,15 @@ noroot
 protocol unix,inet,inet6
 seccomp
 # shell none
+# tracelog
 
 # disable-mnt
 # private
 # private-bin program
 # private-cache
 # private-dev
-# private-etc none
+# private-etc alternatives
 # private-lib
 # private-tmp
 
 # memory-deny-write-execute
-# noexec ${HOME}
-# noexec /tmp

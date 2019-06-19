@@ -11,6 +11,7 @@ noblacklist ${HOME}/.linphonerc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -19,7 +20,7 @@ mkfile ${HOME}/.linphone-history.db
 mkfile ${HOME}/.linphonerc
 whitelist ${HOME}/.linphone-history.db
 whitelist ${HOME}/.linphonerc
-whitelist ${HOME}/Downloads
+whitelist ${DOWNLOADS}
 include whitelist-common.inc
 
 caps.drop all
@@ -40,5 +41,3 @@ disable-mnt
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

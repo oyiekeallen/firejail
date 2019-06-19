@@ -5,19 +5,17 @@ include natron.local
 # Persistent global definitions
 include globals.local
 
-# Allow access to python
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
-
 noblacklist ${HOME}/.Natron
 noblacklist ${HOME}/.cache/INRIA/Natron
 noblacklist ${HOME}/.config/INRIA
-noblacklist /opt/natron
+
+# Allow python (blacklisted by disable-interpreters.inc)
+include allow-python2.inc
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -30,11 +28,9 @@ nogroups
 nonewprivs
 noroot
 notv
-protocol unix,inet,inet6
+nou2f
+protocol unix
 seccomp
 shell none
 
 private-bin natron,Natron,NatronRenderer
-
-noexec ${HOME}
-noexec /tmp

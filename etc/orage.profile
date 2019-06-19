@@ -11,6 +11,7 @@ noblacklist ${HOME}/.local/share/orage
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -23,7 +24,7 @@ nodvd
 nogroups
 nonewprivs
 noroot
-nosound
+# nosound - calendar application, It must be able to play sound to wake you up.
 notv
 nou2f
 novideo
@@ -36,5 +37,3 @@ private-cache
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

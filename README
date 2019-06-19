@@ -38,10 +38,12 @@ Committers
 - glitsj16 (https://github.com/glitsj16)
 - Fred-Barclay (https://github.com/Fred-Barclay)
 - Reiner Herrmann (https://github.com/reinerh - Debian/Ubuntu maintainer)
+- rusty-snake (https://github.com/rusty-snake)
 - smithsohu (https://github.com/smitsohu)
 - SkewedZeppelin (https://github.com/SkewedZeppelin)
 - startx2017 (https://github.com/startx2017) - LTS and *bugfixes branches maintainer)
 - Topi Miettinen (https://github.com/topimiettinen)
+- veloute (https://github.com/veloute)
 - Vincent43 (https://github.com/Vincent43)
 - netblue30 (netblue30@yahoo.com)
 
@@ -49,6 +51,9 @@ Committers
 
 Firejail Authors (alphabetical order)
 
+7twin (https://github.com/7twin_
+	- fix typos
+	- fix flameshot raw screenshots
 1dnrr (https://github.com/1dnrr)
 	- add pybitmessage profile
 Aidan Gauland (https://github.com/aidalgol)
@@ -92,6 +97,9 @@ announ (https://github.com/announ)
 Antonio Russo (https://github.com/aerusso)
 	- enumerate root directories in apparmor profile
 	- fix join-or-start
+Austin Morton (https://github.com/apmorton)
+	- deterministic-exit-code option
+	- private-cwd options
 Austin S. Hemmelgarn (https://github.com/Ferroin)
 	- unbound profile update
 avoidr (https://github.com/avoidr)
@@ -169,6 +177,10 @@ curiosity-seeker (https://github.com/curiosity-seeker)
 	- various other profile fixes
 	- added digiKam profile
 	- write-protection for thumbnailer dir
+	- added gramps, newsboat, freeoffice-planmaker profiles
+	- added freeoffice-textmaker, freeoffice-presentations profiles
+	- added cantata profile
+	- updated keypassxc profile
 da2x (https://github.com/da2x)
 	- matched RPM license tag
 Daan Bakker (https://github.com/dbakker)
@@ -181,6 +193,8 @@ Danil Semelenov (https://github.com/sgtpep)
 Dara Adib (https://github.com/daradib)
 	- ssh profile fix
 	- evince profile fix
+David Thole (https://github.com/TheDarkTrumpet)
+	- added profile for teams-for-linux
 Deelvesh Bunjun (https://github.com/DeelveshBunjun)
 	- added xpdf profile
 dewbasaur (https://github.com/dewbasaur)
@@ -297,6 +311,8 @@ greigdp (https://github.com/greigdp)
 	- fixed spotify profile
 	- added Slack profile
 	- add Spotify profile
+grizzlyuser (https://github.com/grizzlyuser)
+	- added support for youtube-dl in smplayer profile
 GSI (https://github.com/GSI)
 	- added Uzbl browser profile
 hamzadis (https://github.com/hamzadis)
@@ -346,6 +362,7 @@ Jean Lucas (https://github.com/flacks)
 	- fix wire profile
 	- add Beaker profile
 	- fixes for gnome-music
+	- allow reading of system-wide Flatpak locale in gajim profile
 Jericho (https://github.com/attritionorg)
 	- spelling
 Jesse Smith (https://github.com/slicer69)
@@ -361,6 +378,11 @@ John Mullee (https://github.com/jmullee)
 Jonas Heinrich (https://github.com/onny)
 	- added signal-desktop profile
 	- fixed franz profile
+Jose Riha (https://github.com/jose1711)
+	- added meteo-qt profile
+	- created qgis, links, xlinks profiles
+	- extended profile.template with comments
+	- some typo and comment fixes in profile.template
 jrabe (https://github.com/jrabe)
 	- disallow access to kdbx files
 	- Epiphany profile
@@ -397,6 +419,10 @@ LaurentGH (https://github.com/LaurentGH)
 	- allow private-bin parameters to be absolute paths
 Loïc Damien (https://github.com/dzamlo)
 	- small fixes
+Lockdis (https://github.com/Lockdis)
+	- Added crow, nyx, and google-earth-pro profiles
+Lukáš Krejčí (https://github.com/lskrejci)
+        - fixed parsing of --keep-var-tmp
 luzpaz (https://github.com/luzpaz)
 	- code spelling fixes
 maces (https://github.com/maces)
@@ -435,6 +461,9 @@ mustaqimM (https://github.com/mustaqimM)
     - added profile for Nylas Mail
 n1trux (https://github.com/n1trux)
 	- fix flashpeak-slimjet profile typos
+Nick Fox (https://github.com/njfox)
+	- add a profile alias for code-oss
+	- add code-oss config directory
 NickMolloy (https://github.com/NickMolloy)
 	- ARP address length fix
 Niklas Haas (https://github.com/haasn)
@@ -443,6 +472,10 @@ nyancat18 (https://github.com/nyancat18)
 	- added ardour4, dooble, karbon, krita profiles
 Ondra Nekola (https://github.com/satai)
 	- allow firefox theming with non-global themes
+Lorenzo "Palinuro" Faletra (https://github.com/PalinuroSec)
+	- prevent thunderbird conflicts when firefox is running
+	- add join-or-start to pluma to open multiple files in tabs
+	- fixes to keepassxc, thunderbird and pluma
 Panzerfather (https://github.com/Panzerfather)
 	- allow eog to access user's trash
 Patrick Toomey (https://sourceforge.net/u/ptoomey/profile/)
@@ -471,6 +504,8 @@ Petter Reinholdtsen (pere@hungry.com)
 PharmaceuticalCobweb (https://github.com/PharmaceuticalCobweb)
 	- fix quiterss profile
 	- added profile for gnome-ring
+pianoslum (https://github.com/pianoslum)
+	- nodbus breaking evince two-page-view warning
 pirate486743186 (https://github.com/pirate486743186)
 	- KMail profile
 	- mpsyt profile
@@ -493,6 +528,10 @@ pszxzsd (https://github.com/pszxzsd)
 	-uGet profile
 pwnage-pineapple (https://github.com/pwnage-pineapple)
 	- update Okular profile
+Quentin Minster (https://github.com/laomaiweng)
+	- propagate --quiet to children Firejail'ed processes
+	- nodbus enhancements/bugfixes
+	- added vim syntax and ftdetect files
 Rafael Cavalcanti (https://github.com/rccavalcanti)
 	- chromium profile fixes for Arch Linux
 Rahiel Kasim (https://github.com/rahiel)
@@ -526,23 +565,30 @@ rogshdo (https://github.com/rogshdo)
 Ruan (https://github.com/ruany)
 	- fixed hexchat profile
 rusty-snake (https://github.com/rusty-snake)
-	- fixed kdenlive profile
-	- added thunderbird-wayland and supertuxkart profiles
-	- fix bible-time, rhythmbox profiles
-	- more blacklists in disable-common.inc
-	- fixed some missing paths in disable-programs.inc
-	- added ghostwriter profle
-	- fix gajim profile, added gajim-history-manager profile
-	- updates for ~/.cargo
-	- added klavaro profile
+	- added profiles: thunderbird-wayland, supertuxkart, ghostwriter
+	- added profiles: klavaro, mypaint, mypaint-ora-thumbnailer, nano
+	- added profiles: gajim-history-manager, freemind, nomacs, kid3
+	- added profiles: kid3-qt, kid3-cli, anki, utox, mp3splt, mp3wrap
+	- added profiles: oggsplt, flacsplt, cheese, inkview, mp3splt-gtk
+	- added profiles: ktouch, yelp, klatexformula, klatexformula_cmdl
+	- added profiles: pandoc, gnome-sound-recorder, godot, newsbeuter
+	- added profiles: keepassxc-cli, keepassxc-proxy, rhythmbox-client
+	- many profile fixing and hardening
+	- some typo fixes
+	- added profile templates
 Salvo 'LtWorf' Tomaselli (https://github.com/ltworf)
 	- fixed ktorrent profile
 sarneaud (https://github.com/sarneaud)
 	- rewrite globbing code to fix various minor issues
 	- added noblacklist command for profile files
 	- various enhancements and bug fixes
+Senemu (https://github.com/Senemu)
+	- protection for .pythonrc.py
+	- fixed evince
 Sergey Alirzaev (https://github.com/l29ah)
 	- firejail.h enum fix
+Tobias Schmidl (https://github.com/schtobia)
+	- added profile for webui-aria2
 Simon Peter (https://github.com/probonopd)
 	- set $APPIMAGE and $APPDIR environment variables
 	- AppImage version detection
@@ -664,6 +710,7 @@ Topi Miettinen (https://github.com/topimiettinen)
 	- seccomp default list update
 	- improve loading of seccomp filter and memory-deny-write-execute feature
 	- private-lib feature
+	- make --nodbus block also system D-Bus socket
 user1024 (user1024@tut.by)
 	- electron profile whitelisting
 	- fixed Rocket.Chat profile
@@ -705,8 +752,16 @@ veloute (https://github.com/veloute)
 	- fixed discord profile
 	- fixes for various profiles
 	- removed vim and ranger from firecfg
+	- fixing keepassxc auto-type, noexec /tmp
+	- fix ipc-namespace prblem in file-roller
+	- fix exiftool, viewnior, aria2c, ffmpegthumbnailer
+	- fix pavucontrol (ipcnamespace)
+	- fix gnuchess
+	- add anki profile
 Vincent43 (https://github.com/Vincent43)
 	- apparmor enhancements
+Vincent Blillault (https://github.com/Feandil)
+	- fix mumble profile
 vismir2 (https://github.com/vismir2)
 	- feh, ranger, 7z, keepass, keepassx and zathura profiles
 	- claws-mail, mutt, git, emacs, vim profiles

@@ -8,6 +8,7 @@ include globals.local
 
 include disable-common.inc
 # include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -31,10 +32,8 @@ shell none
 
 disable-mnt
 private
-private-bin silentarmy,sa-solver,python*
+private-bin python*,sa-solver,silentarmy
 private-dev
 private-opt none
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

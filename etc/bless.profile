@@ -10,6 +10,7 @@ noblacklist ${HOME}/.config/bless
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -32,11 +33,9 @@ protocol unix
 seccomp
 shell none
 
-# private-bin bless,sh,bash,mono
+# private-bin bash,bless,mono,sh
 private-cache
 private-dev
-private-etc fonts,mono
+private-etc alternatives,fonts,mono
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

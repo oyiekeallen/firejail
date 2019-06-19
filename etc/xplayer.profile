@@ -11,13 +11,12 @@ noblacklist ${MUSIC}
 noblacklist ${VIDEOS}
 
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python2*
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python2*
-noblacklist /usr/lib/python3*
+include	allow-python2.inc
+include	allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -40,8 +39,6 @@ tracelog
 
 private-bin xplayer,xplayer-audio-preview,xplayer-video-thumbnailer
 private-dev
-# private-etc fonts,machine-id,pulse,asound.conf,ca-certificates,ssl,pki,crypto-policies
+# private-etc alternatives,asound.conf,ca-certificates,crypto-policies,fonts,machine-id,pki,pulse,ssl
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

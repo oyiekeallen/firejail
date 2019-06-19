@@ -8,11 +8,11 @@ include globals.local
 noblacklist ${HOME}/.config/onionshare
 
 # Allow python (blacklisted by disable-interpreters.inc)
-noblacklist ${PATH}/python3*
-noblacklist /usr/lib/python3*
+include allow-python3.inc
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -39,5 +39,3 @@ private-dev
 private-tmp
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

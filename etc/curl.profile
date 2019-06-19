@@ -7,11 +7,12 @@ include curl.local
 # Persistent global definitions
 include globals.local
 
-blacklist /tmp/.X11-unix
-
 noblacklist ${HOME}/.curlrc
 
+blacklist /tmp/.X11-unix
+
 include disable-common.inc
+include disable-exec.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
@@ -33,8 +34,5 @@ shell none
 # private-bin curl
 private-cache
 private-dev
-# private-etc resolv.conf,ca-certificates,ssl,pki,crypto-policies
+# private-etc alternatives,ca-certificates,crypto-policies,pki,resolv.conf,ssl
 private-tmp
-
-noexec ${HOME}
-noexec /tmp

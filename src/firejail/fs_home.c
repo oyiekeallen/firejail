@@ -22,7 +22,6 @@
 #include <linux/limits.h>
 #include <glob.h>
 #include <dirent.h>
-#include <fcntl.h>
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -30,6 +29,11 @@
 #include <unistd.h>
 #include <grp.h>
 //#include <ftw.h>
+
+#include <fcntl.h>
+#ifndef O_PATH
+# define O_PATH 010000000
+#endif
 
 static void skel(const char *homedir, uid_t u, gid_t g) {
 	char *fname;
@@ -270,7 +274,7 @@ void fs_private_homedir(void) {
 		// mask /root
 		if (arg_debug)
 			printf("Mounting a new /root directory\n");
-		if (mount("tmpfs", "/root", "tmpfs", MS_NOSUID | MS_NODEV | MS_NOEXEC | MS_STRICTATIME | MS_REC,  "mode=700,gid=0") < 0)
+		if (mount("tmpfs", "/root", "tmpfs", MS_NOSUID | MS_NODEV | MS_NOEXEC | MS_STRICTATIME,  "mode=700,gid=0") < 0)
 			errExit("mounting home directory");
 		fs_logger("tmpfs /root");
 	}
@@ -278,7 +282,7 @@ void fs_private_homedir(void) {
 		// mask /home
 		if (arg_debug)
 			printf("Mounting a new /home directory\n");
-		if (mount("tmpfs", "/home", "tmpfs", MS_NOSUID | MS_NODEV | MS_NOEXEC | MS_STRICTATIME | MS_REC,  "mode=755,gid=0") < 0)
+		if (mount("tmpfs", "/home", "tmpfs", MS_NOSUID | MS_NODEV | MS_NOEXEC | MS_STRICTATIME,  "mode=755,gid=0") < 0)
 			errExit("mounting home directory");
 		fs_logger("tmpfs /home");
 	}
@@ -313,7 +317,7 @@ void fs_private(void) {
 	else {
 		if (arg_allusers)
 			fwarning("--allusers disabled by --private or --whitelist\n");
-		if (mount("tmpfs", "/home", "tmpfs", MS_NOSUID | MS_NODEV | MS_NOEXEC | MS_STRICTATIME | MS_REC,  "mode=755,gid=0") < 0)
+		if (mount("tmpfs", "/home", "tmpfs", MS_NOSUID | MS_NODEV | MS_NOEXEC | MS_STRICTATIME,  "mode=755,gid=0") < 0)
 			errExit("mounting home directory");
 		fs_logger("tmpfs /home");
 	}
@@ -321,7 +325,7 @@ void fs_private(void) {
 	// mask /root
 	if (arg_debug)
 		printf("Mounting a new /root directory\n");
-	if (mount("tmpfs", "/root", "tmpfs", MS_NOSUID | MS_NODEV | MS_NOEXEC | MS_STRICTATIME | MS_REC,  "mode=700,gid=0") < 0)
+	if (mount("tmpfs", "/root", "tmpfs", MS_NOSUID | MS_NODEV | MS_NOEXEC | MS_STRICTATIME,  "mode=700,gid=0") < 0)
 		errExit("mounting root directory");
 	fs_logger("tmpfs /root");
 
@@ -362,6 +366,21 @@ void fs_check_private_dir(void) {
 	if (!cfg.home_private
 	 || !is_dir(cfg.home_private)) {
 		fprintf(stderr, "Error: invalid private directory\n");
+		exit(1);
+	}
+}
+
+// check new private working directory (--private-cwd= option) - exit if it fails
+void fs_check_private_cwd(const char *dir) {
+	EUID_ASSERT();
+	invalid_filename(dir, 0); // no globbing
+
+	// Expand the working directory
+	cfg.cwd = expand_macros(dir);
+
+	// realpath/is_dir not used because path may not exist outside of jail
+	if (strstr(cfg.cwd, "..")) {
+		fprintf(stderr, "Error: invalid private working directory\n");
 		exit(1);
 	}
 }
@@ -517,14 +536,14 @@ void fs_private_home_list(void) {
 		// mask /root
 		if (arg_debug)
 			printf("Mounting a new /root directory\n");
-		if (mount("tmpfs", "/root", "tmpfs", MS_NOSUID | MS_NODEV | MS_STRICTATIME | MS_REC,  "mode=700,gid=0") < 0)
+		if (mount("tmpfs", "/root", "tmpfs", MS_NOSUID | MS_NODEV | MS_STRICTATIME,  "mode=700,gid=0") < 0)
 			errExit("mounting home directory");
 	}
 	else {
 		// mask /home
 		if (arg_debug)
 			printf("Mounting a new /home directory\n");
-		if (mount("tmpfs", "/home", "tmpfs", MS_NOSUID | MS_NODEV | MS_STRICTATIME | MS_REC,  "mode=755,gid=0") < 0)
+		if (mount("tmpfs", "/home", "tmpfs", MS_NOSUID | MS_NODEV | MS_STRICTATIME,  "mode=755,gid=0") < 0)
 			errExit("mounting home directory");
 	}
 

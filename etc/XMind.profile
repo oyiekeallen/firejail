@@ -9,6 +9,7 @@ noblacklist ${HOME}/.xmind
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -31,9 +32,7 @@ seccomp
 shell none
 
 disable-mnt
-private-bin XMind,sh,cp
+private-bin cp,sh,XMind
 private-tmp
 private-dev
 
-noexec ${HOME}
-noexec /tmp

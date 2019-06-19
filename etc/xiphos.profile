@@ -6,22 +6,28 @@ include xiphos.local
 # Persistent global definitions
 include globals.local
 
-blacklist ${HOME}/.bashrc
-
 noblacklist ${HOME}/.sword
 noblacklist ${HOME}/.xiphos
 
+blacklist ${HOME}/.bashrc
+
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+mkdir ${HOME}/.sword
+mkdir ${HOME}/.xiphos
 whitelist ${HOME}/.sword
 whitelist ${HOME}/.xiphos
 include whitelist-common.inc
+include whitelist-var-common.inc
 
+apparmor
 caps.drop all
+machine-id
 netfilter
 nodvd
 nogroups
@@ -36,7 +42,9 @@ seccomp
 shell none
 tracelog
 
+disable-mnt
 private-bin xiphos
+private-cache
 private-dev
-private-etc fonts,resolv.conf,sword,ca-certificates,ssl,pki,crypto-policies
+private-etc alternatives,ca-certificates,crypto-policies,fonts,pki,resolv.conf,ssli,sword,sword.conf
 private-tmp

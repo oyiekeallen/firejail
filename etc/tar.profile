@@ -5,31 +5,44 @@ quiet
 # Persistent local customizations
 include tar.local
 # Persistent global definitions
-# added by included default.profile
-#include globals.local
+include globals.local
 
-blacklist /tmp/.X11-unix
+include disable-common.inc
+include disable-devel.inc
+include disable-exec.inc
+include disable-interpreters.inc
+include disable-passwdmgr.inc
+include disable-programs.inc
 
+apparmor
+caps.drop all
 hostname tar
-ignore noroot
+ipc-namespace
+machine-id
 net none
 no3d
 nodbus
 nodvd
+nogroups
+nonewprivs
+#noroot
 nosound
 notv
 nou2f
 novideo
+protocol unix
+seccomp
 shell none
 tracelog
+x11 none
 
 # support compressed archives
-private-bin sh,bash,tar,gtar,compress,gzip,lzma,xz,bzip2,lbzip2,lzip,lzop
+private-bin bash,bzip2,compress,gtar,gzip,lbzip2,lzip,lzma,lzop,sh,tar,xz
+private-cache
 private-dev
-private-etc passwd,group,localtime
-private-lib
-
+private-etc alternatives,group,localtime,passwd
+private-lib libfakeroot
 # Debian based distributions need this for 'dpkg --unpack' (incl. synaptic)
 writable-var
 
-include default.profile
+memory-deny-write-execute

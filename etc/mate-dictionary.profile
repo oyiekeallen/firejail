@@ -9,15 +9,14 @@ noblacklist ${HOME}/.config/mate/mate-dictionary
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+mkdir ${HOME}/.config/mate/mate-dictionary
 whitelist ${HOME}/.config/mate/mate-dictionary
-whitelist ${HOME}/.config/gtk-3.0
-whitelist ${HOME}/.fonts
-whitelist ${HOME}/.icons
-whitelist ${HOME}/.themes
+include whitelist-common.inc
 
 caps.drop all
 netfilter
@@ -36,11 +35,9 @@ shell none
 
 disable-mnt
 private-bin mate-dictionary
-private-etc fonts,resolv.conf,ca-certificates,ssl,pki,crypto-policies
+private-etc alternatives,ca-certificates,crypto-policies,fonts,pki,resolv.conf,ssl
 private-opt mate-dictionary
 private-dev
 private-tmp
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

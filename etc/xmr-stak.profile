@@ -10,6 +10,7 @@ noblacklist /usr/lib/llvm*
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -37,11 +38,9 @@ disable-mnt
 private ${HOME}/.xmr-stak
 private-bin xmr-stak
 private-dev
-private-etc ca-certificates,crypto-policies,nsswitch.conf,pki,resolv.conf,ssl
+private-etc alternatives,ca-certificates,crypto-policies,nsswitch.conf,pki,resolv.conf,ssl
 #private-lib libxmrstak_opencl_backend,libxmrstak_cuda_backend
 private-opt cuda
 private-tmp
 
 memory-deny-write-execute
-noexec ${HOME}
-noexec /tmp

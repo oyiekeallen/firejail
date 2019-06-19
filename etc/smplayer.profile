@@ -8,11 +8,17 @@ include globals.local
 
 noblacklist ${HOME}/.config/smplayer
 noblacklist ${HOME}/.mplayer
+
+# Allow python (blacklisted by disable-interpreters.inc)
+include allow-python2.inc
+include allow-python3.inc
+
 noblacklist ${MUSIC}
 noblacklist ${VIDEOS}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -32,9 +38,7 @@ protocol unix,inet,inet6,netlink
 seccomp
 shell none
 
-private-bin smplayer,smtube,mplayer,mpv
+private-bin env,mplayer,mpv,python*,smplayer,smtube,youtube-dl
 private-dev
 private-tmp
 
-noexec ${HOME}
-noexec /tmp

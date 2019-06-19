@@ -24,7 +24,11 @@
 #include <sys/mount.h>
 #include <dirent.h>
 #include <sys/wait.h>
+
 #include <fcntl.h>
+#ifndef O_PATH
+# define O_PATH 010000000
+#endif
 
 // disable pulseaudio socket
 void pulseaudio_disable(void) {
@@ -84,7 +88,7 @@ void pulseaudio_init(void) {
 	if (mkdir(RUN_PULSE_DIR, 0700) == -1)
 		errExit("mkdir");
 	// mount it nosuid, noexec, nodev
-	fs_noexec(RUN_PULSE_DIR);
+	fs_remount(RUN_PULSE_DIR, MOUNT_NOEXEC, 0);
 
 	// create the new client.conf file
 	char *pulsecfg = NULL;
@@ -151,8 +155,10 @@ void pulseaudio_init(void) {
 		if (fstatvfs(fd, &vfs) == -1)
 			errExit("fstatvfs");
 		if ((vfs.f_flag & MS_RDONLY) == MS_RDONLY)
-			fs_rdonly(RUN_PULSE_DIR);
+			fs_remount(RUN_PULSE_DIR, MOUNT_READONLY, 0);
 		// mount via the link in /proc/self/fd
+		if (arg_debug)
+			printf("Mounting %s on %s\n", RUN_PULSE_DIR, homeusercfg);
 		char *proc;
 		if (asprintf(&proc, "/proc/self/fd/%d", fd) == -1)
 			errExit("asprintf");
