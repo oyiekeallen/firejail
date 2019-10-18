@@ -5,6 +5,7 @@
 
 export MALLOC_CHECK_=3
 export MALLOC_PERTURB_=$(($RANDOM % 255 + 1))
+export LC_ALL=C
 
 # These directories are required by some tests:
 mkdir -p ~/Desktop ~/Documents ~/Downloads ~/Music ~/Pictures ~/Videos
@@ -20,6 +21,8 @@ mkdir ~/_firejail_test_dir/test1
 touch ~/_firejail_test_dir/test1/b
 echo "TESTING: read/write (test/fs/read-write.exp)"
 ./read-write.exp
+echo "TESTING: whitelist readonly (test/fs/whitelist-readonly.exp)"
+./whitelist-readonly.exp
 rm -fr ~/_firejail_test_*
 
 echo "TESTING: /sys/fs access (test/fs/sys_fs.exp)"
@@ -69,6 +72,9 @@ echo "TESTING: empty private-etc (test/fs/private-etc-empty.exp)"
 echo "TESTING: private-bin (test/fs/private-bin.exp)"
 ./private-bin.exp
 
+echo "TESTING: private-cache (test/fs/private-cache.exp)"
+./private-cache.exp
+
 echo "TESTING: private-cwd (test/fs/private-cwd.exp)"
 ./private-cwd.exp
 
@@ -93,6 +99,12 @@ echo "TESTING: blacklist file (test/fs/option_blacklist_file.exp)"
 echo "TESTING: blacklist glob (test/fs/option_blacklist_glob.exp)"
 ./option_blacklist_glob.exp
 
+echo "TESTING: noblacklist blacklist noexec (test/fs/noblacklist-blacklist-noexec.exp)"
+./noblacklist-blacklist-noexec.exp
+
+echo "TESTING: noblacklist blacklist readonly (test/fs/noblacklist-blacklist-readonly.exp)"
+./noblacklist-blacklist-readonly.exp
+
 echo "TESTING: bind as user (test/fs/option_bind_user.exp)"
 ./option_bind_user.exp
 
@@ -107,6 +119,12 @@ echo "TESTING: whitelist (test/fs/whitelist.exp)"
 
 echo "TESTING: whitelist dev, var(test/fs/whitelist-dev.exp)"
 ./whitelist-dev.exp
+
+echo "TESTING: whitelist noexec (test/fs/whitelist-noexec.exp)"
+./whitelist-noexec.exp
+
+echo "TESTING: whitelist with whitespaces (test/fs/whitelist-whitespace.exp)"
+./whitelist-whitespace.exp
 
 echo "TESTING: fscheck --bind non root (test/fs/fscheck-bindnoroot.exp)"
 ./fscheck-bindnoroot.exp

@@ -44,6 +44,7 @@ ptrace (read,readby) peer=firejail-default,
 ##########
 # Whitelist writable paths under /run, /proc and /sys.
 ##########
+owner /{,run/firejail/mnt/oroot/}{,var/}run/firejail/mnt/trace w,
 owner /{,run/firejail/mnt/oroot/}{,var/}run/user/[0-9]*/** w,
 owner /{,run/firejail/mnt/oroot/}{,var/}run/user/[0-9]*/*.slave-socket w,
 owner /{,run/firejail/mnt/oroot/}{,var/}run/user/[0-9]*/orcexec.* w,
@@ -64,14 +65,14 @@ owner /{,var/}run/media/** w,
 /{,var/}run/cups/cups.sock w,
 
 # Needed for firefox sandbox
-/proc/[0-9]*/{uid_map,gid_map,setgroups} w,
+/proc/@{PID}/{uid_map,gid_map,setgroups} w,
+
+# Needed for electron apps
+/proc/@{PID}/comm w,
 
 # Silence noise
 deny /proc/@{PID}/oom_adj w,
 deny /proc/@{PID}/oom_score_adj w,
-
-# Uncomment to silence all denied write warnings
-#deny /proc/** w,
 
 # Uncomment to silence all denied write warnings
 #deny /sys/** w,

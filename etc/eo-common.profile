@@ -4,7 +4,7 @@
 # Persistent local customizations
 include eo-common.local
 # Persistent global definitions
-# already included by caller profile
+# added by caller profile
 #include globals.local
 
 noblacklist ${HOME}/.local/share/Trash
@@ -18,6 +18,7 @@ include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+include whitelist-usr-share-common.inc
 include whitelist-var-common.inc
 
 apparmor
@@ -43,5 +44,3 @@ private-dev
 private-etc alternatives,dconf,fonts,gtk-3.0
 private-lib eog,eom,gdk-pixbuf-2.*,gio,girepository-1.*,gvfs,libgconf-2.so.*
 private-tmp
-
-#memory-deny-write-execute - breaks on Arch (see issue #1803)

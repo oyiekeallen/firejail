@@ -207,6 +207,12 @@ int checkcfg(int val) {
 					goto errout;
 				cfg_val[CFG_ARP_PROBES] = arp_probes;
 			}
+
+			// file copy limit
+			else if (strncmp(ptr, "file-copy-limit ", 16) == 0) {
+				if (setenv("FIREJAIL_FILE_COPY_LIMIT", ptr + 16, 1) == -1)
+					errExit("setenv");
+			}
 			else
 				goto errout;
 
@@ -272,6 +278,14 @@ void print_compiletime_support(void) {
 
 	printf("\t- file transfer support is %s\n",
 #ifdef HAVE_FILE_TRANSFER
+		"enabled"
+#else
+		"disabled"
+#endif
+		);
+
+	printf("\t- firetunnel support is %s\n",
+#ifdef HAVE_FIRETUNNEL
 		"enabled"
 #else
 		"disabled"

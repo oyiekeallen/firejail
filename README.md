@@ -1,6 +1,7 @@
 # Firejail
 [![Test Status](https://travis-ci.org/netblue30/firejail.svg?branch=master)](https://travis-ci.org/netblue30/firejail)
 [![Build Status](https://gitlab.com/Firejail/firejail_ci/badges/master/pipeline.svg)](https://gitlab.com/Firejail/firejail_ci/pipelines/)
+[![Packaging status](https://repology.org/badge/tiny-repos/firejail.svg)](https://repology.org/project/firejail/versions)
 
 Firejail is a SUID sandbox program that reduces the risk of security breaches by restricting
 the running environment of untrusted applications using Linux namespaces, seccomp-bpf
@@ -28,11 +29,13 @@ Features: https://firejail.wordpress.com/features-3/
 
 Documentation: https://firejail.wordpress.com/documentation-2/
 
-FAQ: https://firejail.wordpress.com/support/
+FAQ: https://github.com/netblue30/firejail/wiki/Frequently-Asked-Questions
 
 Wiki: https://github.com/netblue30/firejail/wiki
 
 Travis-CI status: https://travis-ci.org/netblue30/firejail
+
+GitLab-CI status: https://gitlab.com/Firejail/firejail_ci/pipelines/
 
 
 ## Security vulnerabilities
@@ -45,9 +48,11 @@ $ git clone https://github.com/netblue30/firejail.git
 $ cd firejail
 $ ./configure && make && sudo make install-strip
 `````
-On Debian/Ubuntu you will need to install git and a compiler:
+On Debian/Ubuntu you will need to install git and gcc compiler. AppArmor
+development libraries and pkg-config are required when using --apparmor
+./configure option:
 `````
-$ sudo apt-get install git build-essential
+$ sudo apt-get install git build-essential libapparmor-dev pkg-config
 `````
 
 
@@ -113,4 +118,4 @@ We also keep a list of profile fixes for previous released versions in [etc-fixe
 
 ## New profiles:
 
-klatexformula, klatexformula_cmdl, links, pandoc, qgis, teams-for-linux, xlinks, OpenArena, gnome-sound-recorder, godot, tcpdump, tshark, keepassxc-cli, keepassxc-proxy, newsbeuter, rhythmbox-client
+gnome-sound-recorder, godot, jerry, keepassxc-cli, keepassxc-proxy, klatexformula, klatexformula_cmdl, links, newsbeuter, OpenArena, pandoc, qgis, rhythmbox-client, tcpdump, teams-for-linux, tshark, xlinks, zeal, mpg123, conplay, mpg123.bin, mpg123-alsa, mpg123-id3dump, mpg123-jack, mpg123-nas, mpg123-openal, mpg123-oss, mpg123-portaudio, mpg123-pulse, mpg123-strip, out123, pavucontrol-qt, gnome-characters, gnome-character-map, rsync, Whalebird, tor-browser (AUR), Zulip, tb-starter-wrapper, bzcat, kiwix-desktop, ar, gnome-latex, pngquant, kalgebra, kalgebramobile

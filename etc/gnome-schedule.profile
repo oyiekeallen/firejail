@@ -18,22 +18,8 @@ noblacklist /etc/cron.deny
 noblacklist /etc/shadow
 noblacklist /var/spool/cron
 
-# Needs a terminal for cron job test execution
-noblacklist ${PATH}/lxterminal
-noblacklist ${PATH}/gnome-terminal
-noblacklist ${PATH}/gnome-terminal.wrapper
-noblacklist ${PATH}/lilyterm
-noblacklist ${PATH}/mate-terminal
-noblacklist ${PATH}/mate-terminal.wrapper
-noblacklist ${PATH}/pantheon-terminal
-noblacklist ${PATH}/roxterm
-noblacklist ${PATH}/roxterm-config
-noblacklist ${PATH}/terminix
-noblacklist ${PATH}/tilix
-noblacklist ${PATH}/urxvtc
-noblacklist ${PATH}/urxvtcd
-noblacklist ${PATH}/xfce4-terminal
-noblacklist ${PATH}/xfce4-terminal.wrapper
+# cron job testing needs a terminal, resulting in sandbox escape (see disable-common.inc)
+# add 'noblacklist ${PATH}/your-terminal' to gnome-schedule.local if you need that functionality
 
 # Allow python (blacklisted by disable-interpreters.inc)
 include allow-python2.inc
@@ -49,7 +35,10 @@ include disable-xdg.inc
 
 mkfile ${HOME}/.gnome/gnome-schedule
 whitelist ${HOME}/.gnome/gnome-schedule
+whitelist /var/spool/atd
+whitelist /var/spool/cron
 include whitelist-common.inc
+include whitelist-var-common.inc
 
 apparmor
 caps.keep chown,dac_override,setgid,setuid

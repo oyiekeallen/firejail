@@ -7,9 +7,11 @@ include youtube-dl.local
 # Persistent global definitions
 include globals.local
 
-# breaks when installed via pip
+# breaks when installed under ${HOME} via `pip install --user` (see #2833)
 ignore noexec ${HOME}
 
+noblacklist ${HOME}/.cache/youtube-dl
+noblacklist ${HOME}/.config/youtube-dl
 noblacklist ${HOME}/.netrc
 noblacklist ${MUSIC}
 noblacklist ${VIDEOS}
@@ -17,6 +19,8 @@ noblacklist ${VIDEOS}
 # Allow python (blacklisted by disable-interpreters.inc)
 include allow-python2.inc
 include allow-python3.inc
+
+blacklist /tmp/.X11-unix
 
 include disable-common.inc
 include disable-devel.inc
@@ -26,6 +30,7 @@ include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-xdg.inc
 
+include whitelist-usr-share-common.inc
 include whitelist-var-common.inc
 
 apparmor
@@ -48,7 +53,6 @@ seccomp
 shell none
 tracelog
 
-disable-mnt
 private-bin env,ffmpeg,python*,youtube-dl
 private-cache
 private-dev

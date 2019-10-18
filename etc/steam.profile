@@ -19,10 +19,9 @@ noblacklist ${HOME}/.local/share/vulkan
 noblacklist ${HOME}/.steam
 noblacklist ${HOME}/.steampath
 noblacklist ${HOME}/.steampid
-# with >=llvm-4 mesa drivers need llvm stuff
-noblacklist /usr/lib/llvm*
 # needed for STEAM_RUNTIME_PREFER_HOST_LIBRARIES=1 to work
 noblacklist /sbin
+noblacklist /usr/sbin
 
 # Allow java (blacklisted by disable-devel.inc)
 include allow-java.inc
@@ -39,6 +38,8 @@ include disable-programs.inc
 
 include whitelist-var-common.inc
 
+# allow-debuggers needed for running some games with proton
+allow-debuggers
 caps.drop all
 #ipc-namespace
 netfilter
@@ -53,6 +54,8 @@ nou2f
 # novideo should be commented for VR
 novideo
 protocol unix,inet,inet6,netlink
+# seccomp cause sometimes issues (see #2860, #2951),
+# comment it or add 'ignore seccomp' to steam.local if so.
 seccomp
 shell none
 # tracelog disabled as it breaks integrated browser

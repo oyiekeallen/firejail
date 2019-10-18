@@ -23,6 +23,7 @@ include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+allusers
 caps.drop all
 net none
 nodbus
@@ -36,5 +37,6 @@ nou2f
 novideo
 protocol unix
 seccomp
+#x11 none
 
 private-dev

@@ -6,11 +6,11 @@ include pluma.local
 # Persistent global definitions
 include globals.local
 
+noblacklist ${HOME}/.config/enchant
 noblacklist ${HOME}/.config/pluma
-noblacklist ${HOME}/.python-history
-noblacklist ${HOME}/.python_history
-noblacklist ${HOME}/.pythonhist
-noblacklist ${HOME}/.pythonrc.py
+
+# Allows files commonly used by IDEs
+include allow-common-devel.inc
 
 include disable-common.inc
 include disable-devel.inc
@@ -42,7 +42,7 @@ tracelog
 
 private-bin pluma
 private-dev
-private-lib pluma
+private-lib aspell,gconv,libgspell-1.so.*,libreadline.so.*,libtinfo.so.*,pluma
 private-tmp
 
 memory-deny-write-execute

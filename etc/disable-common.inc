@@ -62,11 +62,16 @@ blacklist /etc/X11/Xsession.d
 blacklist /etc/xdg/autostart
 read-only ${HOME}/.Xauthority
 
+# Session manager
+?HAS_X11: blacklist ${HOME}/.ICEauthority
+?HAS_X11: blacklist /tmp/.ICE-unix
+
 # KDE config
 blacklist ${HOME}/.config/khotkeysrc
 blacklist ${HOME}/.config/krunnerrc
 blacklist ${HOME}/.config/kscreenlockerrc
 blacklist ${HOME}/.config/ksslcertificatemanager
+blacklist ${HOME}/.config/kwalletrc
 blacklist ${HOME}/.config/kwinrc
 blacklist ${HOME}/.config/kwinrulesrc
 blacklist ${HOME}/.config/plasma-org.kde.plasma.desktop-appletsrc
@@ -79,6 +84,7 @@ blacklist ${HOME}/.kde/share/config/khotkeysrc
 blacklist ${HOME}/.kde/share/config/krunnerrc
 blacklist ${HOME}/.kde/share/config/kscreensaverrc
 blacklist ${HOME}/.kde/share/config/ksslcertificatemanager
+blacklist ${HOME}/.kde/share/config/kwalletrc
 blacklist ${HOME}/.kde/share/config/kwinrc
 blacklist ${HOME}/.kde/share/config/kwinrulesrc
 blacklist ${HOME}/.kde/share/config/plasma-desktop-appletsrc
@@ -89,6 +95,7 @@ blacklist ${HOME}/.kde4/share/config/khotkeysrc
 blacklist ${HOME}/.kde4/share/config/krunnerrc
 blacklist ${HOME}/.kde4/share/config/kscreensaverrc
 blacklist ${HOME}/.kde4/share/config/ksslcertificatemanager
+blacklist ${HOME}/.kde4/share/config/kwalletrc
 blacklist ${HOME}/.kde4/share/config/kwinrc
 blacklist ${HOME}/.kde4/share/config/kwinrulesrc
 blacklist ${HOME}/.kde4/share/config/plasma-desktop-appletsrc
@@ -134,6 +141,8 @@ blacklist ${RUNUSER}/kdesud_*
 # gnome
 # contains extensions, last used times of applications, and notifications
 blacklist ${HOME}/.local/share/gnome-shell
+# no direct modification of dconf database
+read-only ${HOME}/.config/dconf
 
 # systemd
 blacklist ${HOME}/.config/systemd
@@ -146,6 +155,10 @@ blacklist /var/lib/systemd
 blacklist ${HOME}/.VirtualBox
 blacklist ${HOME}/.config/VirtualBox
 blacklist ${HOME}/VirtualBox VMs
+
+# GNOME Boxes
+blacklist ${HOME}/.config/gnome-boxes
+blacklist ${HOME}/.local/share/gnome-boxes
 
 # VeraCrypt
 blacklist ${HOME}/.VeraCrypt
@@ -253,6 +266,7 @@ read-only ${HOME}/.exrc
 read-only ${HOME}/.gvimrc
 read-only ${HOME}/.homesick
 read-only ${HOME}/.iscreenrc
+read-only ${HOME}/.local/share/cool-retro-term
 read-only ${HOME}/.mailcap
 read-only ${HOME}/.msmtprc
 read-only ${HOME}/.mutt/muttrc
@@ -279,11 +293,11 @@ read-only ${HOME}/bin
 read-only ${HOME}/.bin
 read-only ${HOME}/.local/bin
 read-only ${HOME}/.cargo/bin
-blacklist ${HOME}/.cargo/registry
-blacklist ${HOME}/.cargo/config
+read-only ${HOME}/.cargo/env
 
 # Write-protection for desktop entries
 read-only ${HOME}/.config/menus
+read-only ${HOME}/.gnome/apps
 read-only ${HOME}/.local/share/applications
 
 # Write-protection for thumbnailer dir
@@ -295,11 +309,14 @@ blacklist ${HOME}/*.kdbx
 blacklist ${HOME}/*.key
 blacklist ${HOME}/.Private
 blacklist ${HOME}/.caff
+blacklist ${HOME}/.cargo/credentials
 blacklist ${HOME}/.cert
 blacklist ${HOME}/.config/keybase
 blacklist ${HOME}/.davfs2/secrets
 blacklist ${HOME}/.ecryptfs
 blacklist ${HOME}/.fetchmailrc
+blacklist ${HOME}/.git-credential-cache
+blacklist ${HOME}/.git-credentials
 blacklist ${HOME}/.gnome2/keyrings
 blacklist ${HOME}/.gnupg
 blacklist ${HOME}/.config/hub

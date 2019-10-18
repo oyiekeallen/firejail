@@ -6,7 +6,8 @@ include seahorse.local
 # Persistent global definitions
 include globals.local
 
-noblacklist ${HOME}/.config/dconf
+blacklist /tmp/.X11-unix
+
 noblacklist ${HOME}/.gnupg
 noblacklist ${HOME}/.ssh
 noblacklist /tmp/ssh-*
@@ -19,10 +20,8 @@ include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-xdg.inc
 
-mkdir ${HOME}/.config/dconf
 mkdir ${HOME}/.gnupg
 mkdir ${HOME}/.ssh
-whitelist ${HOME}/.config/dconf
 whitelist ${HOME}/.gnupg
 whitelist ${HOME}/.ssh
 whitelist /tmp/ssh-*

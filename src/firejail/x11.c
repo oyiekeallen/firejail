@@ -210,7 +210,7 @@ void x11_start_xvfb(int argc, char **argv) {
 
 	setenv("FIREJAIL_X11", "yes", 1);
 
-	// mever try to run X servers as root!!!
+	// never try to run X servers as root!!!
 	if (getuid() == 0) {
 		fprintf(stderr, "Error: X11 sandboxing is not available when running as root\n");
 		exit(1);
@@ -222,6 +222,7 @@ void x11_start_xvfb(int argc, char **argv) {
 		fprintf(stderr, "\nError: Xvfb program was not found in /usr/bin directory, please install it:\n");
 		fprintf(stderr, "   Debian/Ubuntu/Mint: sudo apt-get install xvfb\n");
 		fprintf(stderr, "   Arch: sudo pacman -S xorg-server-xvfb\n");
+		fprintf(stderr, "   Fedora: sudo dnf install xorg-x11-server-Xvfb\n");
 		exit(0);
 	}
 
@@ -310,7 +311,7 @@ void x11_start_xvfb(int argc, char **argv) {
 
 	if (arg_debug) {
 		size_t i = 0;
-		printf("\n*** Stating xvfb client:");
+		printf("\n*** Starting xvfb client:");
 		while (jail_argv[i]!=NULL) {
 			printf(" \"%s\"", jail_argv[i]);
 			i++;
@@ -441,6 +442,7 @@ void x11_start_xephyr(int argc, char **argv) {
 		fprintf(stderr, "\nError: Xephyr program was not found in /usr/bin directory, please install it:\n");
 		fprintf(stderr, "   Debian/Ubuntu/Mint: sudo apt-get install xserver-xephyr\n");
 		fprintf(stderr, "   Arch: sudo pacman -S xorg-server-xephyr\n");
+		fprintf(stderr, "   Fedora: sudo dnf install xorg-x11-server-Xephyr\n");
 		exit(0);
 	}
 
@@ -838,7 +840,7 @@ void x11_start_xpra_old(int argc, char **argv, int display, char *display_str) {
 
 			if (arg_debug) {
 				if (n == 10)
-					printf("failed to stop xpra server gratefully\n");
+					printf("failed to stop xpra server gracefully\n");
 				else
 					printf("xpra server successfully stopped in %d secs\n", n);
 			}
@@ -893,9 +895,9 @@ void x11_start_xpra_new(int argc, char **argv, char *display_str) {
 
 	strcpy(start_child,start_child_prefix);
 	for(i = 0; (unsigned) i < fpos; i++) {
-		strncat(start_child,firejail_argv[i],strlen(firejail_argv[i]));
+		strcat(start_child,firejail_argv[i]);
 		if((unsigned) i != fpos - 1)
-			strncat(start_child," ",strlen(" "));
+			strcat(start_child," ");
 	}
 
 	server_argv[spos++] = start_child;
@@ -1023,6 +1025,8 @@ void x11_start_xpra(int argc, char **argv) {
 	if (!program_in_path("xpra")) {
 		fprintf(stderr, "\nError: Xpra program was not found in /usr/bin directory, please install it:\n");
 		fprintf(stderr, "   Debian/Ubuntu/Mint: sudo apt-get install xpra\n");
+		fprintf(stderr, "   Arch: sudo pacman -S xpra\n");
+		fprintf(stderr, "   Fedora: sudo dnf install xpra\n");
 		exit(0);
 	}
 
@@ -1056,6 +1060,10 @@ void x11_start(int argc, char **argv) {
 		fprintf(stderr, "\nError: Xpra or Xephyr not found in /usr/bin directory, please install one of them:\n");
 		fprintf(stderr, "   Debian/Ubuntu/Mint: sudo apt-get install xpra\n");
 		fprintf(stderr, "   Debian/Ubuntu/Mint: sudo apt-get install xserver-xephyr\n");
+		fprintf(stderr, "   Arch: sudo pacman -S xpra\n");
+		fprintf(stderr, "   Arch: sudo pacman -S xorg-server-xephyr\n");
+		fprintf(stderr, "   Fedora: sudo dnf install xpra\n");
+		fprintf(stderr, "   Fedora: sudo dnf install xorg-x11-server-Xephyr\n");
 		exit(0);
 	}
 }
@@ -1086,8 +1094,10 @@ void x11_xorg(void) {
 	// check xauth utility is present in the system
 	struct stat s;
 	if (stat("/usr/bin/xauth", &s) == -1) {
-		fprintf(stderr, "Error: xauth utility not found in /usr/bin. Please install it:\n"
-			"   Debian/Ubuntu/Mint: sudo apt-get install xauth\n");
+		fprintf(stderr, "Error: xauth utility not found in /usr/bin. Please install it:\n");
+		fprintf(stderr, "   Debian/Ubuntu/Mint: sudo apt-get install xauth\n");
+		fprintf(stderr, "   Arch: sudo pacman -S xorg-xauth\n");
+		fprintf(stderr, "   Fedora: sudo dnf install xorg-x11-xauth\n");
 		exit(1);
 	}
 	if (s.st_uid != 0 && s.st_gid != 0) {
@@ -1128,8 +1138,14 @@ void x11_xorg(void) {
 #ifdef HAVE_GCOV
 		__gcov_flush();
 #endif
-		execlp("/usr/bin/xauth", "/usr/bin/xauth", "-v", "-f", tmpfname,
+		if (arg_debug) {
+			execlp("/usr/bin/xauth", "/usr/bin/xauth", "-v", "-f", tmpfname,
 			"generate", display, "MIT-MAGIC-COOKIE-1", "untrusted", NULL);
+		}
+		else {
+                        execlp("/usr/bin/xauth", "/usr/bin/xauth", "-f", tmpfname,
+                        "generate", display, "MIT-MAGIC-COOKIE-1", "untrusted", NULL);
+		}
 
 		_exit(127);
 	}
@@ -1222,6 +1238,20 @@ void x11_xorg(void) {
 		errLogExit("invalid .Xauthority mount");
 
 	ASSERT_PERMS(dest, getuid(), getgid(), 0600);
+	
+	// blacklist .Xauthority file if it is not masked already
+	char *envar = getenv("XAUTHORITY");
+	if (envar) {
+		char *rp = realpath(envar, NULL);
+		if (rp) {
+			if (strcmp(rp, dest) != 0)
+				disable_file_or_dir(rp);
+			free(rp);
+		}
+		// update environment variable, so our new .Xauthority file is used
+		if (setenv("XAUTHORITY", dest, 1) < 0)
+			errExit("setenv");
+	}
 	free(dest);
 #endif
 }
@@ -1233,11 +1263,22 @@ void fs_x11(void) {
 	if (display <= 0)
 		return;
 
+	struct stat s1, s2;
+	if (stat("/tmp", &s1) != 0 || lstat("/tmp/.X11-unix", &s2) != 0)
+		return;
+	if ((s1.st_mode & S_ISVTX) == 0) {
+		fwarning("cannot mask X11 sockets: sticky bit not set on /tmp directory\n");
+		return;
+	}
+	if (s2.st_uid != 0) {
+		fwarning("cannot mask X11 sockets: /tmp/.X11-unix not owned by root user\n");
+		return;
+	}
 	char *x11file;
 	if (asprintf(&x11file, "/tmp/.X11-unix/X%d", display) == -1)
 		errExit("asprintf");
 	struct stat x11stat;
-	if (stat(x11file, &x11stat) == -1 || !S_ISSOCK(x11stat.st_mode)) {
+	if (lstat(x11file, &x11stat) != 0 || !S_ISSOCK(x11stat.st_mode)) {
 		free(x11file);
 		return;
 	}
@@ -1248,12 +1289,8 @@ void fs_x11(void) {
 	// Move the real /tmp/.X11-unix to a scratch location
 	// so we can still access x11file after we mount a
 	// tmpfs over /tmp/.X11-unix.
-	int rv = mkdir(RUN_WHITELIST_X11_DIR, 0700);
-	if (rv == -1)
+	if (mkdir(RUN_WHITELIST_X11_DIR, 0700) == -1)
 		errExit("mkdir");
-	if (set_perms(RUN_WHITELIST_X11_DIR, 0, 0, 0700))
-		errExit("set_perms");
-
 	if (mount("/tmp/.X11-unix", RUN_WHITELIST_X11_DIR, 0, MS_BIND|MS_REC, 0) < 0)
 		errExit("mount bind");
 
@@ -1272,21 +1309,36 @@ void fs_x11(void) {
 		errExit("fchown");
 	close(fd);
 
-	// do the mount
+	// the mount source is under control of the user, so be careful and
+	// mount without following symbolic links, using a file descriptor
 	char *wx11file;
 	if (asprintf(&wx11file, "%s/X%d", RUN_WHITELIST_X11_DIR, display) == -1)
 		errExit("asprintf");
-	if (mount(wx11file, x11file, NULL, MS_BIND|MS_REC, NULL) < 0)
+	fd = safe_fd(wx11file, O_PATH|O_NOFOLLOW|O_CLOEXEC);
+	if (fd == -1)
+		errExit("opening X11 socket");
+	// confirm once more we are mounting a socket
+	if (fstat(fd, &x11stat) == -1)
+		errExit("fstat");
+	if (!S_ISSOCK(x11stat.st_mode)) {
+		errno = ENOTSOCK;
+		errExit("mounting X11 socket");
+	}
+	char *proc;
+	if (asprintf(&proc, "/proc/self/fd/%d", fd) == -1)
+		errExit("asprintf");
+	if (mount(proc, x11file, NULL, MS_BIND|MS_REC, NULL) < 0)
 		errExit("mount bind");
 	fs_logger2("whitelist", x11file);
-
-	free(x11file);
-	free(wx11file);
+	close(fd);
+	free(proc);
 
 	// block access to RUN_WHITELIST_X11_DIR
 	if (mount(RUN_RO_DIR, RUN_WHITELIST_X11_DIR, 0, MS_BIND, 0) < 0)
 		errExit("mount");
 	fs_logger2("blacklist", RUN_WHITELIST_X11_DIR);
+	free(wx11file);
+	free(x11file);
 #endif
 }
 
@@ -1305,12 +1357,18 @@ void x11_block(void) {
 	}
 
 	// blacklist sockets
-	profile_check_line("blacklist /tmp/.X11-unix", 0, NULL);
-	profile_add(strdup("blacklist /tmp/.X11-unix"));
+	char *cmd = strdup("blacklist /tmp/.X11-unix");
+	if (!cmd)
+		errExit("strdup");
+	profile_check_line(cmd, 0, NULL);
+	profile_add(cmd);
 
 	// blacklist .Xauthority
-	profile_check_line("blacklist ${HOME}/.Xauthority", 0, NULL);
-	profile_add(strdup("blacklist ${HOME}/.Xauthority"));
+	cmd = strdup("blacklist ${HOME}/.Xauthority");
+	if (!cmd)
+		errExit("strdup");
+	profile_check_line(cmd, 0, NULL);
+	profile_add(cmd);
 	char *xauthority = getenv("XAUTHORITY");
 	if (xauthority) {
 		char *line;

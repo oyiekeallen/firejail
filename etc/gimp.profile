@@ -8,9 +8,10 @@ include globals.local
 
 # gimp plugins are installed by the user in ${HOME}/.gimp-2.8/plug-ins/ directory
 # if you are not using external plugins, you can comment 'ignore noexec' statement below
-# or put 'ignore ignore noexec ${HOME}' in your gimp.local
+# or put 'noexec ${HOME}' in your gimp.local
 ignore noexec ${HOME}
 
+noblacklist ${HOME}/.cache/gimp
 noblacklist ${HOME}/.config/GIMP
 noblacklist ${HOME}/.gimp*
 noblacklist ${DOCUMENTS}
@@ -22,6 +23,9 @@ include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-xdg.inc
 
+whitelist /usr/share/gimp
+whitelist /usr/share/mypaint-data
+include whitelist-usr-share-common.inc
 include whitelist-var-common.inc
 
 apparmor
@@ -38,6 +42,7 @@ nou2f
 protocol unix
 seccomp
 shell none
+tracelog
 
 private-dev
 private-tmp

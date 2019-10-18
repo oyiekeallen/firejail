@@ -1,21 +1,22 @@
 # Firejail profile for transmission-remote-gtk
 # Description: A remote control utility for transmission-daemon (GTK GUI)
 # This file is overwritten after every install/update
+quiet
 # Persistent local customizations
 include transmission-remote-gtk.local
 # Persistent global definitions
-# added by included profile
-#include globals.local
+include globals.local
 
-mkdir ${HOME}/.cache/transmission
-mkdir ${HOME}/.config/transmission
-whitelist ${HOME}/.cache/transmission
-whitelist ${HOME}/.config/transmission
-include whitelist-common.inc
-include whitelist-var-common.inc
+noblacklist ${HOME}/.config/transmission-remote-gtk
 
-private-etc fonts
+mkdir ${HOME}/.config/transmission-remote-gtk
+whitelist ${HOME}/.config/transmission-remote-gtk
 
+private-etc fonts,hostname,hosts,resolv.conf
+# Problems with private-lib (see issue #2889)
+ignore private-lib
+
+ignore memory-deny-write-execute
 
 # Redirect
-include transmission-remote.profile
+include transmission-common.profile

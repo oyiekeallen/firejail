@@ -3,16 +3,16 @@
 # This file is overwritten after every install/update
 # --- CUT HERE ---
 # This is a generic template to help you with creation of profiles
-# for new programs. PRs welcome at https://github.com/netblue30/firejail/
+# for new programs. PRs welcome at https://github.com/netblue30/firejail/.
 #
 # Rules to follow:
 #  - lines with one # are often used in profiles
 #  - lines with two ## are only needed in special situations
 #  - make the profile as restrictive as possible while still keeping the program useful
-#    (e. g. a program that is unable to save user's work is considered a bad practice)
-#  - dedicate some time (based on how complex the application is) to profile testing before raising
+#    (e. g. a program that is unable to save user's work is considered bad practice)
+#  - dedicate some time (based on the complexity of the application) to profile testing before raising
 #    a pull request
-#  - keep the sections structure, use a single empty line as a separator
+#  - keep the sections structure, use a single empty line as separator
 #  - entries within sections are alphabetically sorted
 #  - consider putting binary into src/firecfg/firecfg.config (keep list sorted) but beware
 #    to not do this for essential utilities as this may *break* your OS! (related discussion:
@@ -30,7 +30,7 @@
 #   MKDIRS
 #   WHITELISTS
 #   WHITELIST INCLUDES
-#   OPTIONS (caps*, net*, no*, protocol, seccomp, shell none, tracelog)
+#   OPTIONS (caps*, net*, no*, protocol, seccomp*, shell none, tracelog)
 #   PRIVATE OPTIONS (disable-mnt, private-*, writable-*)
 #   SPECIAL OPTIONS (mdwx, noexec, read-only, join-or-start)
 #   REDIRECT INCLUDES
@@ -49,13 +49,16 @@
 # --- CUT HERE ---
 ##quiet
 # Persistent local customizations
-#include PROFILE.local
+include PROFILE.local
 # Persistent global definitions
-#include globals.local
+include globals.local
 
 ##ignore noexec ${HOME}
+##ignore noexec /tmp
 
 ##blacklist PATH
+# Disable X11 (CLI only), see also 'x11 none' below
+#blacklist /tmp/.X11-unix
 
 # It is common practice to add files/dirs containing program-specific configuration
 # (often ${HOME}/PROGRAMNAME or ${HOME}/.config/PROGRAMNAME) into disable-programs.inc
@@ -63,8 +66,8 @@
 # One way to retrieve the files a program uses is:
 #  - launch binary with --private naming a sandbox
 #      `firejail --name=test --ignore=private-bin [--profile=PROFILE] --private BINARY`
-#  - work with the program, do some configuration changes and save them, open new documents,
-#    install plugins if they exists, etc
+#  - work with the program, make some configuration changes and save them, open new documents,
+#    install plugins if they exists, etc.
 #  - join the sandbox with bash:
 #      `firejail --join=test bash`
 #  - look what has changed and use that information to populate blacklist and whitelist sections
@@ -84,6 +87,9 @@
 # Allow lua (blacklisted by disable-interpreters.inc)
 #include allow-lua.inc
 
+# Allows files commonly used by IDEs
+#include allow-common-devel.inc
+
 #include disable-common.inc
 #include disable-devel.inc
 #include disable-exec.inc
@@ -101,12 +107,17 @@
 ##mkfile PATH
 #whitelist PATH
 #include whitelist-common.inc
+#include whitelist-usr-share-common.inc
 #include whitelist-var-common.inc
 
+##allusers
 #apparmor
 #caps.drop all
+##caps.keep CAPS
+##hostname NAME
 # CLI only
 ##ipc-namespace
+# breaks sound and sometime dbus related functions
 #machine-id
 # 'net none' or 'netfilter'
 #net none
@@ -121,20 +132,29 @@
 #notv
 #nou2f
 #novideo
-#protocol unix,inet,inet6,netlink
+# Remove each unneeded protocol:
+#  - unix is usually needed
+#  - inet,inet6 only if internet access is required (see 'net none'/'netfilter' above)
+#  - netlink is rarely needed
+#  - packet almost never
+#protocol unix,inet,inet6,netlink,packet
 #seccomp
-##seccomp.drop SYSCALLS (see also syscalls.txt)
+##seccomp !chroot
+##seccomp.drop SYSCALLS (see syscalls.txt)
 #shell none
 #tracelog
+# Prefer 'x11 none' instead of 'blacklist /tmp/.X11-unix' if 'net none' is set
+##x11 none
 
 #disable-mnt
 ##private
+# It's common practice to refer to the python executable(s) in private-bin with `python*`, which covers both v2 and v3
 #private-bin PROGRAMS
 #private-cache
 #private-dev
 #private-etc FILES
 # private-etc templates (see also #1734, #2093)
-#  Common: ld.so.cache,ld.so.preload,ld.so.conf,ld.so.conf.d,locale,locale.alias,locale.conf,localtime,alternatives,mime.types,xdg
+#  Common: alternatives,ld.so.cache,ld.so.conf,ld.so.conf.d,ld.so.preload,locale,locale.alias,locale.conf,localtime,mime.types,xdg
 #    Extra: magic,magic.mgc,passwd,group
 #  Networking: ca-certificates,ssl,pki,crypto-policies,nsswitch.conf,resolv.conf,hosts,host.conf,hostname,protocols,services,rpc
 #    Extra: proxychains.conf,gai.conf
@@ -148,6 +168,10 @@
 ##private-lib LIBS
 ##private-opt NAME
 #private-tmp
+##writable-etc
+##writable-run-user
+##writable-var
+##writable-var-log
 
 ##env VAR=VALUE
 #memory-deny-write-execute

@@ -9,12 +9,10 @@ include globals.local
 
 noblacklist ${HOME}/.lesshst
 
-include disable-common.inc
 include disable-devel.inc
 include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
-include disable-programs.inc
 
 apparmor
 caps.drop all
@@ -45,3 +43,5 @@ private-dev
 writable-var-log
 
 memory-deny-write-execute
+read-only ${HOME}
+read-write ${HOME}/.lesshst

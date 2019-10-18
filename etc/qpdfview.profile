@@ -22,6 +22,8 @@ include whitelist-var-common.inc
 
 caps.drop all
 machine-id
+# needs D-Bus when started from a file manager
+#nodbus
 nodvd
 nogroups
 nonewprivs
@@ -38,5 +40,3 @@ tracelog
 private-bin qpdfview
 private-dev
 private-tmp
-
-memory-deny-write-execute

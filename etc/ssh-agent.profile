@@ -19,12 +19,15 @@ include disable-programs.inc
 caps.drop all
 netfilter
 no3d
+nodbus
 nodvd
 nonewprivs
 noroot
 notv
+novideo
 protocol unix,inet,inet6
 seccomp
 shell none
+tracelog
 
 writable-run-user

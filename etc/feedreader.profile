@@ -15,12 +15,15 @@ include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
+include disable-xdg.inc
 
 mkdir ${HOME}/.cache/feedreader
 mkdir ${HOME}/.local/share/feedreader
 whitelist ${HOME}/.cache/feedreader
 whitelist ${HOME}/.local/share/feedreader
+whitelist /usr/share/feedreader
 include whitelist-common.inc
+include whitelist-usr-share-common.inc
 include whitelist-var-common.inc
 
 caps.drop all

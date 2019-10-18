@@ -104,7 +104,7 @@ static struct sock_fprog prog = {
 	.filter = filter,
 };
 
-int sbox_run(unsigned filter, int num, ...) {
+int sbox_run(unsigned filtermask, int num, ...) {
 	EUID_ROOT();
 
 	int i;
@@ -129,22 +129,40 @@ int sbox_run(unsigned filter, int num, ...) {
 	if (child < 0)
 		errExit("fork");
 	if (child == 0) {
-		// clean the new process
+		// preserve firejail-specific env vars
+		char *cl = getenv("FIREJAIL_FILE_COPY_LIMIT");
+		if (cl) {
+			// duplicate the value, who knows what's going to happen with it in clearenv!
+			cl = strdup(cl);
+			if (!cl)
+				errExit("strdup");
+		}
 		clearenv();
+		if (cl) {
+			if (setenv("FIREJAIL_FILE_COPY_LIMIT", cl, 1) == -1)
+				errExit("setenv");
+			free(cl);
+		}
+		if (arg_quiet) // --quiet is passed as an environment variable
+			setenv("FIREJAIL_QUIET", "yes", 1);
+		if (arg_debug) // --debug is passed as an environment variable
+			setenv("FIREJAIL_DEBUG", "yes", 1);
 
-		if (filter & SBOX_STDIN_FROM_FILE) {
+		if (filtermask & SBOX_STDIN_FROM_FILE) {
 			int fd;
 			if((fd = open(SBOX_STDIN_FILE, O_RDONLY)) == -1) {
 				fprintf(stderr,"Error: cannot open %s\n", SBOX_STDIN_FILE);
 				exit(1);
 			}
-			dup2(fd,STDIN_FILENO);
+			if (dup2(fd, STDIN_FILENO) == -1)
+				errExit("dup2");
 			close(fd);
 		}
-		else if ((filter & SBOX_ALLOW_STDIN) == 0) {
+		else if ((filtermask & SBOX_ALLOW_STDIN) == 0) {
 			int fd = open("/dev/null",O_RDWR, 0);
 			if (fd != -1) {
-				dup2(fd, STDIN_FILENO);
+				if (dup2(fd, STDIN_FILENO) == -1)
+					errExit("dup2");
 				close(fd);
 			}
 			else // the user could run the sandbox without /dev/null
@@ -159,17 +177,17 @@ int sbox_run(unsigned filter, int num, ...) {
 		umask(027);
 
 		// apply filters
-		if (filter & SBOX_CAPS_NONE) {
+		if (filtermask & SBOX_CAPS_NONE) {
 			caps_drop_all();
 		}
-		else if (filter & SBOX_CAPS_NETWORK) {
+		else if (filtermask & SBOX_CAPS_NETWORK) {
 #ifndef HAVE_GCOV // the following filter will prevent GCOV from saving info in .gcda files
 			uint64_t set = ((uint64_t) 1) << CAP_NET_ADMIN;
 			set |=  ((uint64_t) 1) << CAP_NET_RAW;
 			caps_set(set);
 #endif
 		}
-		else if (filter & SBOX_CAPS_HIDEPID) {
+		else if (filtermask & SBOX_CAPS_HIDEPID) {
 #ifndef HAVE_GCOV // the following filter will prevent GCOV from saving info in .gcda files
 			uint64_t set = ((uint64_t) 1) << CAP_SYS_PTRACE;
 			set |=  ((uint64_t) 1) << CAP_SYS_PACCT;
@@ -177,7 +195,7 @@ int sbox_run(unsigned filter, int num, ...) {
 #endif
 		}
 
-		if (filter & SBOX_SECCOMP) {
+		if (filtermask & SBOX_SECCOMP) {
 			if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)) {
 				perror("prctl(NO_NEW_PRIVS)");
 			}
@@ -186,21 +204,15 @@ int sbox_run(unsigned filter, int num, ...) {
 			}
 		}
 
-		if (filter & SBOX_ROOT) {
+		if (filtermask & SBOX_ROOT) {
 			// elevate privileges in order to get grsecurity working
 			if (setreuid(0, 0))
 				errExit("setreuid");
 			if (setregid(0, 0))
 				errExit("setregid");
 		}
-		else if (filter & SBOX_USER)
+		else if (filtermask & SBOX_USER)
 			drop_privs(1);
-
-		clearenv();
-
-		// --quiet is passed as an environment variable
-		if (arg_quiet)
-			setenv("FIREJAIL_QUIET", "yes", 1);
 
 		if (arg[0])	// get rid of scan-build warning
 			execvp(arg[0], arg);

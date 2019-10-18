@@ -9,16 +9,17 @@ include globals.local
 
 noblacklist ${HOME}/.curlrc
 
-blacklist /tmp/.X11-unix
-
 include disable-common.inc
 include disable-exec.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
 caps.drop all
+ipc-namespace
+machine-id
 netfilter
 no3d
+nodbus
 nodvd
 nogroups
 nonewprivs
@@ -27,7 +28,7 @@ nosound
 notv
 nou2f
 novideo
-protocol unix,inet,inet6
+protocol inet,inet6
 seccomp
 shell none
 

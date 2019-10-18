@@ -124,19 +124,21 @@ typedef struct profile_entry_t {
 
 	// whitelist command parameters
 	char *link;	// link name - set if the file is a link
-	unsigned home_dir:1;	// whitelist in /home/user directory
-	unsigned tmp_dir:1;	// whitelist in /tmp directory
-	unsigned media_dir:1;	// whitelist in /media directory
-	unsigned mnt_dir:1;	// whitelist in /mnt directory
-	unsigned var_dir:1;	// whitelist in /var directory
-	unsigned dev_dir:1;	// whitelist in /dev directory
-	unsigned opt_dir:1;	// whitelist in /opt directory
-	unsigned srv_dir:1;	// whitelist in /srv directory
-	unsigned etc_dir:1;	// whitelist in /etc directory
-	unsigned share_dir:1;	// whitelist in /usr/share directory
-	unsigned module_dir:1;	// whitelist in /sys/module directory
-	unsigned run_dir:1;	// whitelist in /run/user/$uid directory
-}ProfileEntry;
+	enum {
+		WLDIR_HOME = 1,	// whitelist in home directory
+		WLDIR_TMP,	// whitelist in /tmp directory
+		WLDIR_MEDIA,	// whitelist in /media directory
+		WLDIR_MNT,	// whitelist in /mnt directory
+		WLDIR_VAR,	// whitelist in /var directory
+		WLDIR_DEV,	// whitelist in /dev directory
+		WLDIR_OPT,	// whitelist in /opt directory
+		WLDIR_SRV,	// whitelist in /srv directory
+		WLDIR_ETC,	// whitelist in /etc directory
+		WLDIR_SHARE,	// whitelist in /usr/share directory
+		WLDIR_MODULE,	// whitelist in /sys/module directory
+		WLDIR_RUN	// whitelist in /run/user/$uid directory
+	} wldir;
+} ProfileEntry;
 
 typedef struct config_t {
 	// user data
@@ -258,6 +260,7 @@ extern int arg_caps_keep;		// keep list
 extern char *arg_caps_list;		// optional caps list
 
 extern int arg_trace;		// syscall tracing support
+extern char *arg_tracefile;	// syscall tracing file
 extern int arg_tracelog;	// blacklist tracing support
 extern int arg_rlimit_cpu;	// rlimit cpu
 extern int arg_rlimit_nofile;	// rlimit nofile
@@ -383,17 +386,21 @@ void fs_remount(const char *dir, OPERATION op, unsigned check_mnt);
 void fs_remount_rec(const char *dir, OPERATION op, unsigned check_mnt);
 // mount /proc and /sys directories
 void fs_proc_sys_dev_boot(void);
+// blacklist firejail configuration and runtime directories
+void disable_config(void);
 // build a basic read-only filesystem
 void fs_basic_fs(void);
 // mount overlayfs on top of / directory
 char *fs_check_overlay_dir(const char *subdirname, int allow_reuse);
 void fs_overlayfs(void);
-// chroot into an existing directory; mount exiting /dev and update /etc/resolv.conf
-void fs_chroot(const char *rootdir);
-void fs_check_chroot_dir(const char *rootdir);
 void fs_private_tmp(void);
 void fs_private_cache(void);
 void fs_mnt(const int enforce);
+
+// chroot.c
+// chroot into an existing directory; mount existing /dev and update /etc/resolv.conf
+void fs_check_chroot_dir(void);
+void fs_chroot(const char *rootdir);
 
 // profile.c
 // find and read the profile specified by name from dir directory
@@ -557,6 +564,7 @@ void caps_drop_dac_override(void);
 
 // fs_trace.c
 void fs_trace_preload(void);
+void fs_tracefile(void);
 void fs_trace(void);
 
 // fs_hostname.c
@@ -720,6 +728,7 @@ enum {
 	CFG_PRIVATE_CACHE,
 	CFG_CGROUP,
 	CFG_NAME_CHANGE,
+	// CFG_FILE_COPY_LIMIT - file copy limit handled using setenv/getenv
 	CFG_MAX // this should always be the last entry
 };
 extern char *xephyr_screen;

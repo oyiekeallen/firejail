@@ -110,17 +110,12 @@ static void skel(const char *homedir, uid_t u, gid_t g) {
 }
 
 static int store_xauthority(void) {
-	// put a copy of .Xauthority in XAUTHORITY_FILE
-	char *src;
-	char *dest = RUN_XAUTHORITY_FILE;
-	// create an empty file as root, and change ownership to user
-	FILE *fp = fopen(dest, "w");
-	if (fp) {
-		fprintf(fp, "\n");
-		SET_PERMS_STREAM(fp, getuid(), getgid(), 0600);
-		fclose(fp);
-	}
+	if (arg_x11_block)
+		return 0;
 
+	// put a copy of .Xauthority in XAUTHORITY_FILE
+	char *dest = RUN_XAUTHORITY_FILE;
+	char *src;
 	if (asprintf(&src, "%s/.Xauthority", cfg.homedir) == -1)
 		errExit("asprintf");
 
@@ -128,29 +123,37 @@ static int store_xauthority(void) {
 	if (stat(src, &s) == 0) {
 		if (is_link(src)) {
 			fwarning("invalid .Xauthority file\n");
+			free(src);
 			return 0;
 		}
 
+		// create an empty file as root, and change ownership to user
+		FILE *fp = fopen(dest, "w");
+		if (fp) {
+			fprintf(fp, "\n");
+			SET_PERMS_STREAM(fp, getuid(), getgid(), 0600);
+			fclose(fp);
+		}
+		else
+			errExit("fopen");
+
 		copy_file_as_user(src, dest, getuid(), getgid(), 0600); // regular user
 		fs_logger2("clone", dest);
+		free(src);
 		return 1; // file copied
 	}
 
+	free(src);
 	return 0;
 }
 
 static int store_asoundrc(void) {
-	// put a copy of .Xauthority in XAUTHORITY_FILE
-	char *src;
-	char *dest = RUN_ASOUNDRC_FILE;
-	// create an empty file as root, and change ownership to user
-	FILE *fp = fopen(dest, "w");
-	if (fp) {
-		fprintf(fp, "\n");
-		SET_PERMS_STREAM(fp, getuid(), getgid(), 0644);
-		fclose(fp);
-	}
+	if (arg_nosound)
+		return 0;
 
+	// put a copy of .asoundrc in ASOUNDRC_FILE
+	char *dest = RUN_ASOUNDRC_FILE;
+	char *src;
 	if (asprintf(&src, "%s/.asoundrc", cfg.homedir) == -1)
 		errExit("asprintf");
 
@@ -164,18 +167,30 @@ static int store_asoundrc(void) {
 				fprintf(stderr, "Error: Cannot access %s\n", src);
 				exit(1);
 			}
-			if (strncmp(rp, cfg.homedir, strlen(cfg.homedir)) != 0) {
+			if (strncmp(rp, cfg.homedir, strlen(cfg.homedir)) != 0 || rp[strlen(cfg.homedir)] != '/') {
 				fprintf(stderr, "Error: .asoundrc is a symbolic link pointing to a file outside home directory\n");
 				exit(1);
 			}
 			free(rp);
 		}
 
+		// create an empty file as root, and change ownership to user
+		FILE *fp = fopen(dest, "w");
+		if (fp) {
+			fprintf(fp, "\n");
+			SET_PERMS_STREAM(fp, getuid(), getgid(), 0644);
+			fclose(fp);
+		}
+		else
+			errExit("fopen");
+
 		copy_file_as_user(src, dest, getuid(), getgid(), 0644); // regular user
 		fs_logger2("clone", dest);
+		free(src);
 		return 1; // file copied
 	}
 
+	free(src);
 	return 0;
 }
 
@@ -194,13 +209,14 @@ static void copy_xauthority(void) {
 
 	copy_file_as_user(src, dest, getuid(), getgid(), S_IRUSR | S_IWUSR); // regular user
 	fs_logger2("clone", dest);
+	free(dest);
 
 	// delete the temporary file
 	unlink(src);
 }
 
 static void copy_asoundrc(void) {
-	// copy XAUTHORITY_FILE in the new home directory
+	// copy ASOUNDRC_FILE in the new home directory
 	char *src = RUN_ASOUNDRC_FILE ;
 	char *dest;
 	if (asprintf(&dest, "%s/.asoundrc", cfg.homedir) == -1)
@@ -214,6 +230,7 @@ static void copy_asoundrc(void) {
 
 	copy_file_as_user(src, dest, getuid(), getgid(), S_IRUSR | S_IWUSR); // regular user
 	fs_logger2("clone", dest);
+	free(dest);
 
 	// delete the temporary file
 	unlink(src);
@@ -239,13 +256,16 @@ void fs_private_homedir(void) {
 	// mount bind private_homedir on top of homedir
 	if (arg_debug)
 		printf("Mount-bind %s on top of %s\n", private_homedir, homedir);
-	// get a file descriptor for private_homedir, fails if there is any symlink
-	int fd = safe_fd(private_homedir, O_PATH|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);
-	if (fd == -1)
+	// get file descriptors for homedir and private_homedir, fails if there is any symlink
+	int src = safe_fd(private_homedir, O_PATH|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);
+	if (src == -1)
+		errExit("safe_fd");
+	int dst = safe_fd(homedir, O_PATH|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);
+	if (dst == -1)
 		errExit("safe_fd");
 	// check if new home directory is owned by the user
 	struct stat s;
-	if (fstat(fd, &s) == -1)
+	if (fstat(src, &s) == -1)
 		errExit("fstat");
 	if (s.st_uid != getuid()) {
 		fprintf(stderr, "Error: private directory is not owned by the current user\n");
@@ -253,17 +273,27 @@ void fs_private_homedir(void) {
 	}
 	if ((S_IRWXU & s.st_mode) != S_IRWXU)
 		fwarning("no full permissions on private directory\n");
-	// mount via the link in /proc/self/fd
-	char *proc;
-	if (asprintf(&proc, "/proc/self/fd/%d", fd) == -1)
+	// mount via the links in /proc/self/fd
+	char *proc_src, *proc_dst;
+	if (asprintf(&proc_src, "/proc/self/fd/%d", src) == -1)
 		errExit("asprintf");
-	if (mount(proc, homedir, NULL, MS_NOSUID | MS_NODEV | MS_BIND | MS_REC, NULL) < 0)
+	if (asprintf(&proc_dst, "/proc/self/fd/%d", dst) == -1)
+		errExit("asprintf");
+	if (mount(proc_src, proc_dst, NULL, MS_NOSUID | MS_NODEV | MS_BIND | MS_REC, NULL) < 0)
 		errExit("mount bind");
-	free(proc);
-	close(fd);
+	free(proc_src);
+	free(proc_dst);
+	close(src);
+	close(dst);
+	// check /proc/self/mountinfo to confirm the mount is ok
+	MountData *mptr = get_last_mount();
+	size_t len = strlen(homedir);
+	if (strncmp(mptr->dir, homedir, len) != 0 ||
+	   (*(mptr->dir + len) != '\0' && *(mptr->dir + len) != '/'))
+		errLogExit("invalid private mount");
 
-	fs_logger3("mount-bind", private_homedir, cfg.homedir);
-	fs_logger2("whitelist", cfg.homedir);
+	fs_logger3("mount-bind", private_homedir, homedir);
+	fs_logger2("whitelist", homedir);
 // preserve mode and ownership
 //	if (chown(homedir, s.st_uid, s.st_gid) == -1)
 //		errExit("mount-bind chown");
@@ -278,7 +308,7 @@ void fs_private_homedir(void) {
 			errExit("mounting home directory");
 		fs_logger("tmpfs /root");
 	}
-	else {
+	if (u == 0 || strncmp(homedir, "/home/", 6) != 0) {
 		// mask /home
 		if (arg_debug)
 			printf("Mounting a new /home directory\n");
@@ -310,13 +340,13 @@ void fs_private(void) {
 	int aflag = store_asoundrc();
 
 	// mask /home
-	if (arg_debug)
-		printf("Mounting a new /home directory\n");
 	if (u == 0 && arg_allusers) // allow --allusers when starting the sandbox as root
 		;
 	else {
+		if (arg_debug)
+			printf("Mounting a new /home directory\n");
 		if (arg_allusers)
-			fwarning("--allusers disabled by --private or --whitelist\n");
+			fwarning("allusers option disabled by private or whitelist option\n");
 		if (mount("tmpfs", "/home", "tmpfs", MS_NOSUID | MS_NODEV | MS_NOEXEC | MS_STRICTATIME,  "mode=755,gid=0") < 0)
 			errExit("mounting home directory");
 		fs_logger("tmpfs /home");
@@ -330,19 +360,24 @@ void fs_private(void) {
 	fs_logger("tmpfs /root");
 
 	if (u != 0) {
-		// create /home/user
-		if (arg_debug)
-			printf("Create a new user directory\n");
-		if (mkdir(homedir, S_IRWXU) == -1) {
-			if (mkpath_as_root(homedir) == -1)
-				errExit("mkpath");
-			if (mkdir(homedir, S_IRWXU) == -1 && errno != EEXIST)
-				errExit("mkdir");
+		if (strncmp(homedir, "/home/", 6) == 0) {
+			// create /home/user
+			if (arg_debug)
+				printf("Create a new user directory\n");
+			if (mkdir(homedir, S_IRWXU) == -1) {
+				if (mkpath_as_root(homedir) == -1)
+					errExit("mkpath");
+				if (mkdir(homedir, S_IRWXU) == -1 && errno != EEXIST)
+					errExit("mkdir");
+			}
+			if (chown(homedir, u, g) < 0)
+				errExit("chown");
+			fs_logger2("mkdir", homedir);
+			fs_logger2("tmpfs", homedir);
 		}
-		if (chown(homedir, u, g) < 0)
-			errExit("chown");
-		fs_logger2("mkdir", homedir);
-		fs_logger2("tmpfs", homedir);
+		else
+			// user directory is outside /home, mask it as well
+			fs_tmpfs(homedir, 1);
 	}
 
 	skel(homedir, u, g);
@@ -425,17 +460,15 @@ static char *check_dir_or_file(const char *name) {
 			goto errexit;
 	}
 	else {
-		// check the file is in user home directory, a full home directory is not allowed
+		// check the file is in user home directory
 		char *rname = realpath(fname, NULL);
-		if (!rname ||
-		    strncmp(rname, cfg.homedir, strlen(cfg.homedir)) != 0 ||
-		    strcmp(rname, cfg.homedir) == 0)
+		if (!rname || strncmp(rname, cfg.homedir, strlen(cfg.homedir)) != 0)
 			goto errexit;
-
-		// only top files and directories in user home are allowed
+		// a full home directory is not allowed
 		char *ptr = rname + strlen(cfg.homedir);
 		if (*ptr != '/')
 			goto errexit;
+		// only top files and directories in user home are allowed
 		ptr = strchr(++ptr, '/');
 		if (ptr) {
 			fprintf(stderr, "Error: only top files and directories in user home are allowed\n");
@@ -464,14 +497,14 @@ static void duplicate(char *name) {
 	}
 	else if (S_ISDIR(s.st_mode)) {
 		// create the directory in RUN_HOME_DIR
-		char *name;
+		char *path;
 		char *ptr = strrchr(fname, '/');
 		ptr++;
-		if (asprintf(&name, "%s/%s", RUN_HOME_DIR, ptr) == -1)
+		if (asprintf(&path, "%s/%s", RUN_HOME_DIR, ptr) == -1)
 			errExit("asprintf");
-		mkdir_attr(name, 0755, getuid(), getgid());
-		sbox_run(SBOX_USER| SBOX_CAPS_NONE | SBOX_SECCOMP, 3, PATH_FCOPY, fname, name);
-		free(name);
+		mkdir_attr(path, 0755, getuid(), getgid());
+		sbox_run(SBOX_USER| SBOX_CAPS_NONE | SBOX_SECCOMP, 3, PATH_FCOPY, fname, path);
+		free(path);
 	}
 	else
 		sbox_run(SBOX_USER| SBOX_CAPS_NONE | SBOX_SECCOMP, 3, PATH_FCOPY, fname, RUN_HOME_DIR);
@@ -528,8 +561,20 @@ void fs_private_home_list(void) {
 	if (arg_debug)
 		printf("Mount-bind %s on top of %s\n", RUN_HOME_DIR, homedir);
 
-	if (mount(RUN_HOME_DIR, homedir, NULL, MS_BIND|MS_REC, NULL) < 0)
+	int fd = safe_fd(homedir, O_PATH|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);
+	if (fd == -1)
+		errExit("safe_fd");
+	char *proc;
+	if (asprintf(&proc, "/proc/self/fd/%d", fd) == -1)
+		errExit("asprintf");
+	if (mount(RUN_HOME_DIR, proc, NULL, MS_BIND|MS_REC, NULL) < 0)
 		errExit("mount bind");
+	free(proc);
+	close(fd);
+	// check /proc/self/mountinfo to confirm the mount is ok
+	MountData *mptr = get_last_mount();
+	if (strcmp(mptr->dir, homedir) != 0 || strcmp(mptr->fstype, "tmpfs") != 0)
+		errLogExit("invalid private-home mount");
 	fs_logger2("tmpfs", homedir);
 
 	if (uid != 0) {
@@ -539,7 +584,7 @@ void fs_private_home_list(void) {
 		if (mount("tmpfs", "/root", "tmpfs", MS_NOSUID | MS_NODEV | MS_STRICTATIME,  "mode=700,gid=0") < 0)
 			errExit("mounting home directory");
 	}
-	else {
+	if (uid == 0 || strncmp(homedir, "/home/", 6) != 0) {
 		// mask /home
 		if (arg_debug)
 			printf("Mounting a new /home directory\n");

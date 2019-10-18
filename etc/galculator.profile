@@ -24,7 +24,7 @@ include whitelist-var-common.inc
 apparmor
 caps.drop all
 #hostname galculator - breaks Arch Linux
-ipc-namespace
+#ipc-namespace
 net none
 nodbus
 nodvd
@@ -47,4 +47,4 @@ private-etc alternatives,fonts
 private-lib
 private-tmp
 
-memory-deny-write-execute
+#memory-deny-write-execute - breaks on Arch (see issue #1803)

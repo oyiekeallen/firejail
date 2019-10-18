@@ -14,6 +14,13 @@ noblacklist ${HOME}/.gnupg
 # noblacklist ${HOME}/.icedove
 noblacklist ${HOME}/.thunderbird
 
+# Uncomment the next 4 lines or put they in your thunderbird.local to
+# allow Firefox to load your profile when clicking a link in an email
+#noblacklist ${HOME}/.cache/mozilla
+#noblacklist ${HOME}/.mozilla
+#whitelist ${HOME}/.cache/mozilla/firefox
+#whitelist ${HOME}/.mozilla
+
 # If you have setup Thunderbird to archive emails to a local folder,
 # make sure you add the path to that folder to the mkdir and whitelist
 # rules below. Otherwise they will be deleted when you close Thunderbird.
@@ -26,6 +33,10 @@ whitelist ${HOME}/.cache/thunderbird
 whitelist ${HOME}/.gnupg
 # whitelist ${HOME}/.icedove
 whitelist ${HOME}/.thunderbird
+
+#whitelist /usr/share/ca-certificates
+#whitelist /usr/share/mozilla
+#include whitelist-usr-share-common.inc
 
 # We need the real /tmp for data exchange when xdg-open handles email attachments on KDE
 ignore private-tmp

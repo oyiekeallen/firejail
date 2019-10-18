@@ -15,6 +15,7 @@ include disable-programs.inc
 include disable-xdg.inc
 
 whitelist /var/log/journal
+include whitelist-usr-share-common.inc
 include whitelist-var-common.inc
 
 apparmor
@@ -37,6 +38,7 @@ novideo
 protocol unix
 seccomp
 shell none
+tracelog
 
 disable-mnt
 private-bin gnome-logs

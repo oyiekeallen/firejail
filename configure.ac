@@ -1,55 +1,56 @@
+#
+# Note:
+#
+# If for any reason autoconf fails, run "autoreconf -i --install " and try again.
+# This is how the error looks like on Arch Linux:
+#        ./configure: line 3064: syntax error near unexpected token `newline'
+#        ./configure: line 3064: `AX_CHECK_COMPILE_FLAG('
+#
+# We rely solely on autoconf, without automake. Apparently, in this case
+# the macros from m4 directory are not picked up by default by automake.
+# "autoreconf -i --install" seems to fix the problem.
+#
+
 AC_PREREQ([2.68])
 AC_INIT(firejail, 0.9.61, netblue30@yahoo.com, , https://firejail.wordpress.com)
 AC_CONFIG_SRCDIR([src/firejail/main.c])
-#AC_CONFIG_HEADERS([config.h])
+
+AC_CONFIG_MACRO_DIR([m4])
 
 AC_PROG_CC
-#AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_RANLIB
 
 HAVE_SPECTRE="no"
-AC_MSG_CHECKING(for Spectre mitigation support in gcc or clang compiler)
-AS_IF([test "$CC" = "gcc"], [
-	HAVE_SPECTRE="yes"
-	$CC -mindirect-branch=thunk -c dummy.c || HAVE_SPECTRE="no"
-	rm -f dummy.o
-	AS_IF([test "$HAVE_SPECTRE" = "yes"], [
-		EXTRA_CFLAGS+=" -mindirect-branch=thunk "
-	])
-])
-AS_IF([test "$CC" = "clang"], [
-	HAVE_SPECTRE="yes"
-	$CC -mretpoline -c dummy.c || HAVE_SPECTRE="no"
-	rm -f dummy.o
-	AS_IF([test "$HAVE_SPECTRE" = "yes"], [
-		EXTRA_CFLAGS+=" -mretpoline "
-	])
-])
-AS_IF([test "$HAVE_SPECTRE" = "yes"], [
-	AC_MSG_RESULT(yes)
-])
-AS_IF([test "$HAVE_SPECTRE" = "no"], [
-	AC_MSG_RESULT(... not available)
-])
-AC_SUBST([EXTRA_CFLAGS])
+AX_CHECK_COMPILE_FLAG(
+    [-mindirect-branch=thunk],
+    [HAVE_SPECTRE="yes" && EXTRA_CFLAGS+=" -mindirect-branch=thunk"]
+)
+AX_CHECK_COMPILE_FLAG(
+    [-mretpoline],
+    [HAVE_SPECTRE="yes" && EXTRA_CFLAGS+=" -mretpoline"]
+)
+AX_CHECK_COMPILE_FLAG(
+    [-fstack-clash-protection],
+    [HAVE_SPECTRE="yes" && EXTRA_CFLAGS+=" -fstack-clash-protection"]
+)
+AX_CHECK_COMPILE_FLAG(
+    [-fstack-protector-strong],
+    [HAVE_SPECTRE="yes" && EXTRA_CFLAGS+=" -fstack-protector-strong"]
+)
 
 HAVE_APPARMOR=""
 AC_ARG_ENABLE([apparmor],
     AS_HELP_STRING([--enable-apparmor], [enable apparmor]))
 AS_IF([test "x$enable_apparmor" = "xyes"], [
 	HAVE_APPARMOR="-DHAVE_APPARMOR"
+	PKG_CHECK_MODULES([AA], libapparmor, [EXTRA_CFLAGS+=" $AA_CFLAGS" && EXTRA_LDFLAGS+=" $AA_LIBS"])
 	AC_SUBST(HAVE_APPARMOR)
 ])
 
-AS_IF([test "x$enable_apparmor" = "xyes"], [
-	AC_CHECK_HEADER(sys/apparmor.h, , [AC_MSG_ERROR(
-	[Couldn't find sys/apparmor.h... please install apparmor user space library and development files] )])
-])
-AS_IF([test "x$enable_apparmor" = "xyes"], [
-	EXTRA_LDFLAGS+=" -lapparmor "
-])
+AC_SUBST([EXTRA_CFLAGS])
 AC_SUBST([EXTRA_LDFLAGS])
+
 
 HAVE_OVERLAYFS=""
 AC_ARG_ENABLE([overlayfs],
@@ -57,6 +58,14 @@ AC_ARG_ENABLE([overlayfs],
 AS_IF([test "x$enable_overlayfs" != "xno"], [
 	HAVE_OVERLAYFS="-DHAVE_OVERLAYFS"
 	AC_SUBST(HAVE_OVERLAYFS)
+])
+
+HAVE_FIRETUNNEL=""
+AC_ARG_ENABLE([firetunnel],
+    AS_HELP_STRING([--disable-firetunnel], [disable firetunnel]))
+AS_IF([test "x$enable_firetunnel" != "xno"], [
+	HAVE_FIRETUNNEL="-DHAVE_FIRETUNNEL"
+	AC_SUBST(HAVE_FIRETUNNEL)
 ])
 
 HAVE_PRIVATEHOME=""
@@ -206,6 +215,7 @@ echo "   whitelisting: $HAVE_WHITELIST"
 echo "   private home support: $HAVE_PRIVATE_HOME"
 echo "   file transfer support: $HAVE_FILE_TRANSFER"
 echo "   overlayfs support: $HAVE_OVERLAYFS"
+echo "   firetunnel support: $HAVE_FIRETUNNEL"
 echo "   busybox workaround: $BUSYBOX_WORKAROUND"
 echo "   Spectre compiler patch: $HAVE_SPECTRE"
 echo "   EXTRA_LDFLAGS: $EXTRA_LDFLAGS"

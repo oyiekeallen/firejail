@@ -16,6 +16,7 @@ include disable-xdg.inc
 
 whitelist ${HOME}/.local/share/glib-2.0
 include whitelist-common.inc
+include whitelist-usr-share-common.inc
 
 apparmor
 caps.drop all
@@ -41,5 +42,3 @@ private-dev
 private-etc alternatives,dconf,fonts,gtk-3.0,machine-id
 private-lib
 private-tmp
-
-# memory-deny-write-execute

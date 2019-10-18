@@ -7,8 +7,6 @@ include file.local
 # Persistent global definitions
 include globals.local
 
-blacklist /tmp/.X11-unix
-
 include disable-common.inc
 include disable-exec.inc
 include disable-passwdmgr.inc
@@ -35,10 +33,11 @@ shell none
 tracelog
 x11 none
 
-#private-bin file
+#private-bin bzip2,file,gzip,lrzip,lz4,lzip,xz,zstd
 private-cache
 private-dev
 private-etc alternatives,localtime,magic,magic.mgc
-private-lib libarchive.so.*,libfakeroot,libmagic.so.*
+private-lib file,libarchive.so.*,libfakeroot,libmagic.so.*
 
 memory-deny-write-execute
+read-only ${HOME}

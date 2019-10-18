@@ -26,7 +26,6 @@
 #include <sys/mount.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 #include <dirent.h>
 #include <pwd.h>
 #include <errno.h>
@@ -37,6 +36,20 @@
 #include <time.h>
 #include <net/if.h>
 #include <sys/utsname.h>
+
+#include <fcntl.h>
+#ifndef O_PATH
+#define O_PATH 010000000
+#endif
+
+#ifdef __ia64__
+/* clone(2) has a different interface on ia64, as it needs to know
+   the size of the stack */
+int __clone2(int (*fn)(void *),
+             void *child_stack_base, size_t stack_size,
+             int flags, void *arg, ...
+              /* pid_t *ptid, struct user_desc *tls, pid_t *ctid */ );
+#endif
 
 uid_t firejail_uid = 0;
 gid_t firejail_gid = 0;
@@ -67,6 +80,7 @@ int arg_caps_keep = 0;			// keep list
 char *arg_caps_list = NULL;			// optional caps list
 
 int arg_trace = 0;				// syscall tracing support
+char *arg_tracefile = NULL;			// syscall tracing file
 int arg_tracelog = 0;				// blacklist tracing support
 int arg_rlimit_cpu = 0;				// rlimit max cpu time
 int arg_rlimit_nofile = 0;			// rlimit nofile
@@ -233,6 +247,32 @@ static pid_t require_pid(const char *name) {
 	return pid;
 }
 
+// return 1 if there is a link somewhere in path of directory
+static int has_link(const char *dir) {
+	assert(dir);
+	int fd = safe_fd(dir, O_PATH|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);
+	if (fd == -1) {
+		if (errno == ENOTDIR && is_dir(dir))
+			return 1;
+	}
+	else
+		close(fd);
+	return 0;
+}
+
+static void check_homedir(void) {
+	assert(cfg.homedir);
+	if (cfg.homedir[0] != '/' || cfg.homedir[1] == '\0') { // system users sometimes have root directory as home
+		fprintf(stderr, "Error: invalid user directory \"%s\"\n", cfg.homedir);
+		exit(1);
+	}
+	// symlinks are rejected in many places
+	if (has_link(cfg.homedir)) {
+		fprintf(stderr, "No full support for symbolic links in path of user directory.\n"
+			"Please provide resolved path in password database (/etc/passwd).\n\n");
+	}
+}
+
 // init configuration
 static void init_cfg(int argc, char **argv) {
 	EUID_ASSERT();
@@ -255,14 +295,15 @@ static void init_cfg(int argc, char **argv) {
 	if (!cfg.username)
 		errExit("strdup");
 
-	// build home directory name
-	cfg.homedir = NULL;
-	if (pw->pw_dir != NULL) {
-		cfg.homedir = clean_pathname(pw->pw_dir);
-		assert(cfg.homedir);
-	}
-	else {
-		fprintf(stderr, "Error: user %s doesn't have a user directory assigned\n", cfg.username);
+	// check user database
+	if (!firejail_user_check(cfg.username)) {
+		fprintf(stderr, "Error: the user is not allowed to use Firejail.\n"
+			"Please add the user in %s/firejail.users file,\n"
+			"either by running \"sudo firecfg\", or by editing the file directly.\n"
+			"See \"man firejail-users\" for more details.\n\n", SYSCONFDIR);
+
+		// attempt to run the program as is
+		run_symlink(argc, argv, 1);
 		exit(1);
 	}
 
@@ -270,17 +311,13 @@ static void init_cfg(int argc, char **argv) {
 	if (!cfg.cwd && errno != ENOENT)
 		errExit("getcwd");
 
-	// check user database
-	if (!firejail_user_check(cfg.username)) {
-		fprintf(stderr, "Error: the user is not allowed to use Firejail. "
-			"Please add the user in %s/firejail.users file, "
-			"either by running \"sudo firecfg\", or by editing the file directly.\n"
-			"See \"man firejail-users\" for more details.\n", SYSCONFDIR);
-
-		// attempt to run the program as is
-		run_symlink(argc, argv, 1);
+	// build home directory name
+	if (pw->pw_dir == NULL) {
+		fprintf(stderr, "Error: user %s doesn't have a user directory assigned\n", cfg.username);
 		exit(1);
 	}
+	cfg.homedir = clean_pathname(pw->pw_dir);
+	check_homedir();
 
 	// initialize random number generator
 	sandbox_pid = getpid();
@@ -915,9 +952,14 @@ int main(int argc, char **argv) {
 	// sanitize the umask
 	orig_umask = umask(022);
 
+	// argument count should be larger than 0
+	if (argc == 0) {
+		fprintf(stderr, "Error: argv[0] is NULL\n");
+		exit(1);
+	}
+
 	// check if the user is allowed to use firejail
 	init_cfg(argc, argv);
-	assert(cfg.homedir);
 
 	// get starting timestamp, process --quiet
 	start_timestamp = getticks();
@@ -1261,6 +1303,26 @@ int main(int argc, char **argv) {
 		}
 		else if (strcmp(argv[i], "--trace") == 0)
 			arg_trace = 1;
+		else if (strncmp(argv[i], "--trace=", 8) == 0) {
+			arg_trace = 1;
+			arg_tracefile = argv[i] + 8;
+			if (*arg_tracefile == '\0') {
+				fprintf(stderr, "Error: invalid trace option\n");
+				exit(1);
+			}
+			invalid_filename(arg_tracefile, 0); // no globbing
+			if (strstr(arg_tracefile, "..")) {
+				fprintf(stderr, "Error: invalid file name %s\n", arg_tracefile);
+				exit(1);
+			}
+			// if the filename starts with ~, expand the home directory
+			if (*arg_tracefile == '~') {
+				char *tmp;
+				if (asprintf(&tmp, "%s%s", cfg.homedir, arg_tracefile + 1) == -1)
+					errExit("asprintf");
+				arg_tracefile = tmp;
+			}
+		}
 		else if (strcmp(argv[i], "--tracelog") == 0)
 			arg_tracelog = 1;
 		else if (strncmp(argv[i], "--rlimit-cpu=", 13) == 0) {
@@ -1498,6 +1560,7 @@ int main(int argc, char **argv) {
 				exit_err_feature("overlayfs");
 		}
 #endif
+#ifdef HAVE_FIRETUNNEL
 		else if (strcmp(argv[i], "--tunnel") == 0) {
 			// try to connect to the default client side of the tunnel
 			// if this fails, try the default server side of the tunnel
@@ -1523,7 +1586,7 @@ int main(int argc, char **argv) {
 				exit(1);
 			}
 		}
-
+#endif
 		else if (strncmp(argv[i], "--profile=", 10) == 0) {
 			// multiple profile files are allowed!
 
@@ -1596,12 +1659,14 @@ int main(int argc, char **argv) {
 					fprintf(stderr, "Error: --chroot option is not available on Grsecurity systems\n");
 					exit(1);
 				}
-
-
-				invalid_filename(argv[i] + 9, 0); // no globbing
-
 				// extract chroot dirname
 				cfg.chrootdir = argv[i] + 9;
+				if (*cfg.chrootdir == '\0') {
+					fprintf(stderr, "Error: invalid chroot option\n");
+					exit(1);
+				}
+				invalid_filename(cfg.chrootdir, 0); // no globbing
+
 				// if the directory starts with ~, expand the home directory
 				if (*cfg.chrootdir == '~') {
 					char *tmp;
@@ -1609,22 +1674,8 @@ int main(int argc, char **argv) {
 						errExit("asprintf");
 					cfg.chrootdir = tmp;
 				}
-
-				if (strstr(cfg.chrootdir, "..") || is_link(cfg.chrootdir)) {
-					fprintf(stderr, "Error: invalid chroot directory %s\n", cfg.chrootdir);
-					return 1;
-				}
-
-				// check chroot dirname exists, don't allow "--chroot=/"
-				char *rpath = realpath(cfg.chrootdir, NULL);
-				if (rpath == NULL || strcmp(rpath, "/") == 0) {
-					fprintf(stderr, "Error: invalid chroot directory\n");
-					exit(1);
-				}
-				cfg.chrootdir = rpath;
-
-				// check chroot directory structure
-				fs_check_chroot_dir(cfg.chrootdir);
+				// check chroot directory
+				fs_check_chroot_dir();
 			}
 			else
 				exit_err_feature("chroot");
@@ -2159,6 +2210,7 @@ int main(int argc, char **argv) {
 				cfg.dns4 = dns;
 			else {
 				fprintf(stderr, "Error: up to 4 DNS servers can be specified\n");
+				free(dns);
 				return 1;
 			}
 		}
@@ -2539,10 +2591,18 @@ int main(int argc, char **argv) {
 
 	EUID_ASSERT();
 	EUID_ROOT();
+#ifdef __ia64__
+	child = __clone2(sandbox,
+		child_stack,
+		STACK_SIZE,
+		flags,
+		NULL);
+#else
 	child = clone(sandbox,
 		child_stack + STACK_SIZE,
 		flags,
 		NULL);
+#endif
 	if (child == -1)
 		errExit("clone");
 	EUID_USER();

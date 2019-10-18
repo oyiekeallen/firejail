@@ -13,6 +13,8 @@ include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+whitelist /usr/share/file-roller
+include whitelist-usr-share-common.inc
 include whitelist-var-common.inc
 
 apparmor
@@ -21,9 +23,6 @@ caps.drop all
 machine-id
 # net none - breaks on older Ubuntu versions
 no3d
-# nodbus - makes settings immutable - comment if you need settings support
-# or put 'ignore nodbus' in your file-roller.local
-nodbus
 nodvd
 nogroups
 nonewprivs
@@ -40,5 +39,3 @@ tracelog
 # private-bin file-roller
 private-dev
 # private-tmp
-
-# memory-deny-write-execute

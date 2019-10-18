@@ -2,9 +2,11 @@
 # This file is overwritten after every install/update
 # Persistent local customizations
 include start-tor-browser.desktop.local
+# Persistent global definitions
+# added by included profile
+#include globals.local
 
-noblacklist ${HOME}/.tor-browser-*
-noblacklist ${HOME}/.tor-browser_*
+noblacklist ${HOME}/.tor-browser*
 
 whitelist ${HOME}/.tor-browser-ar
 whitelist ${HOME}/.tor-browser-ca

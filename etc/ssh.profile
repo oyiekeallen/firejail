@@ -22,6 +22,7 @@ caps.drop all
 ipc-namespace
 netfilter
 no3d
+nodbus
 nodvd
 nogroups
 nonewprivs
@@ -29,6 +30,7 @@ nonewprivs
 nosound
 notv
 nou2f
+novideo
 protocol unix,inet,inet6
 seccomp
 shell none

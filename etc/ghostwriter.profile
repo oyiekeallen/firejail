@@ -7,6 +7,7 @@ include ghostwriter.local
 include globals.local
 
 noblacklist ${HOME}/.config/ghostwriter
+noblacklist ${HOME}/.local/share/ghostwriter
 noblacklist ${DOCUMENTS}
 noblacklist ${PICTURES}
 
@@ -18,20 +19,16 @@ include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-xdg.inc
 
-#mkdir ${HOME}/.config/ghostwriter
-#whitelist ${HOME}/.config/ghostwriter
-#whitelist ${DESKTOP}
-#whitelist ${DOCUMENTS}
-#whitelist ${DOWNLOADS}
-#whitelist ${PICTURES}
-#include whitelist-common.inc
+#whitelist /usr/share/ghostwriter
+#whitelist /usr/share/mozilla-dicts
+#whitelist /usr/share/texlive
+#whitelist /usr/share/pandoc*
+#include whitelist-usr-share-common.inc
 
 apparmor
 caps.drop all
 machine-id
 netfilter
-#no3d
-#nodbus
 nodvd
 nogroups
 nonewprivs
@@ -40,17 +37,14 @@ nosound
 notv
 nou2f
 novideo
-protocol unix,inet,netlink
-seccomp
+protocol unix,inet,inet6,netlink
+seccomp !chroot
 shell none
-tracelog
+#tracelog -- breaks
 
-# Breaks Translation
-#private-bin ghostwriter,pandoc
+private-bin context,gettext,ghostwriter,latex,mktexfmt,pandoc,pdflatex,pdfroff,prince,weasyprint,wkhtmltopdf
 private-cache
 private-dev
-private-etc alternatives,crypto-policies,cups,dconf,drirc,fonts,gtk-3.0,localtime,machine-id
-# Breaks Translation
-#private-lib
+# passwd,login.defs,firejail are a temporary workaround for #2877 and can be removed once it is fixed
+private-etc alternatives,ca-certificates,crypto-policies,dbus-1,dconf,firejail,fonts,gconf,groups,gtk-2.0,gtk-3.0,host.conf,hostname,hosts,ld.so.cache,ld.so.conf,ld.so.conf.d,ld.so.preload,locale,locale.alias,locale.conf,localtime,login.defs,machine-id,mime.types,nsswitch.conf,pango,passwd,pki,protocols,resolv.conf,rpc,services,ssl,texlive,Trolltech.conf,X11,xdg
 private-tmp
-

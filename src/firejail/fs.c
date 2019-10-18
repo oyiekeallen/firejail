@@ -28,6 +28,7 @@
 #include <dirent.h>
 #include <errno.h>
 
+
 #include <fcntl.h>
 #ifndef O_PATH
 # define O_PATH 010000000
@@ -204,21 +205,23 @@ static void globbing(OPERATION op, const char *pattern, const char *noblacklist[
 			continue;
 		// noblacklist is expected to be short in normal cases, so stupid and correct brute force is okay
 		bool okay_to_blacklist = true;
-		for (j = 0; j < noblacklist_len; j++) {
-			int result = fnmatch(noblacklist[j], path, FNM_PATHNAME);
-			if (result == FNM_NOMATCH)
-				continue;
-			else if (result == 0) {
-				okay_to_blacklist = false;
+		if (op == BLACKLIST_FILE || op == BLACKLIST_NOLOG) {
+			for (j = 0; j < noblacklist_len; j++) {
+				int result = fnmatch(noblacklist[j], path, FNM_PATHNAME);
+				if (result == FNM_NOMATCH)
+					continue;
+				else if (result == 0) {
+					okay_to_blacklist = false;
 #ifdef TEST_NO_BLACKLIST_MATCHING
-				if (j < nbcheck_size)	// noblacklist checking
-					nbcheck[j] = 1;
+					if (j < nbcheck_size)	// noblacklist checking
+						nbcheck[j] = 1;
 #endif
-				break;
-			}
-			else {
-				fprintf(stderr, "Error: failed to compare path %s with pattern %s\n", path, noblacklist[j]);
-				exit(1);
+					break;
+				}
+				else {
+					fprintf(stderr, "Error: failed to compare path %s with pattern %s\n", path, noblacklist[j]);
+					exit(1);
+				}
 			}
 		}
 
@@ -439,6 +442,8 @@ static int get_mount_flags(const char *path, unsigned long *flags) {
 // mount a writable tmpfs on directory
 void fs_tmpfs(const char *dir, unsigned check_owner) {
 	assert(dir);
+	if (arg_debug)
+		printf("Mounting tmpfs on %s\n", dir);
 	// get a file descriptor for dir, fails if there is any symlink
 	int fd = safe_fd(dir, O_PATH|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);
 	if (fd == -1)
@@ -447,12 +452,9 @@ void fs_tmpfs(const char *dir, unsigned check_owner) {
 	if (fstat(fd, &s) == -1)
 		errExit("fstat");
 	if (check_owner && s.st_uid != getuid()) {
-		fwarning("no tmpfs mounted on %s: not owned by the current user\n", dir);
-		close(fd);
-		return;
+		fprintf(stderr, "Error: cannot mount tmpfs on %s: not owned by the current user\n", dir);
+		exit(1);
 	}
-	if (arg_debug)
-		printf("Mounting tmpfs on %s\n", dir);
 	// preserve ownership, mode
 	char *options;
 	if (asprintf(&options, "mode=%o,uid=%u,gid=%u", s.st_mode & 07777, s.st_uid, s.st_gid) == -1)
@@ -583,13 +585,9 @@ void fs_mnt(const int enforce) {
 // mount /proc and /sys directories
 void fs_proc_sys_dev_boot(void) {
 
-	if (arg_debug)
-		printf("Remounting /proc and /proc/sys filesystems\n");
-	if (mount("proc", "/proc", "proc", MS_NOSUID | MS_NOEXEC | MS_NODEV | MS_REC, NULL) < 0)
-		errExit("mounting /proc");
-	fs_logger("remount /proc");
-
 	// remount /proc/sys readonly
+	if (arg_debug)
+		printf("Mounting read-only /proc/sys\n");
 	if (mount("/proc/sys", "/proc/sys", NULL, MS_BIND | MS_REC, NULL) < 0 ||
 	    mount(NULL, "/proc/sys", NULL, MS_BIND | MS_REMOUNT | MS_RDONLY | MS_NOSUID | MS_NOEXEC | MS_NODEV | MS_REC, NULL) < 0)
 		errExit("mounting /proc/sys");
@@ -599,7 +597,8 @@ void fs_proc_sys_dev_boot(void) {
 	/* Mount a version of /sys that describes the network namespace */
 	if (arg_debug)
 		printf("Remounting /sys directory\n");
-	// if this is an overlay, don't try to unmount, just mount a new sysfs
+	// sysfs not yet mounted in overlays, so don't try to unmount it
+	// expect that unmounting /sys fails in a chroot, no need to print a warning in that case
 	if (!arg_overlay) {
 		if (umount2("/sys", MNT_DETACH) < 0 && !cfg.chrootdir)
 			fwarning("failed to unmount /sys\n");
@@ -698,8 +697,8 @@ void fs_proc_sys_dev_boot(void) {
 	}
 }
 
-// disable firejail configuration in /etc/firejail and in ~/.config/firejail
-static void disable_config(void) {
+// disable firejail configuration in ~/.config/firejail
+void disable_config(void) {
 	struct stat s;
 
 	char *fname;
@@ -716,6 +715,8 @@ static void disable_config(void) {
 		disable_file(BLACKLIST_FILE, RUN_FIREJAIL_BANDWIDTH_DIR);
 	if (stat(RUN_FIREJAIL_NAME_DIR, &s) == 0)
 		disable_file(BLACKLIST_FILE, RUN_FIREJAIL_NAME_DIR);
+	if (stat(RUN_FIREJAIL_PROFILE_DIR, &s) == 0)
+		disable_file(BLACKLIST_FILE, RUN_FIREJAIL_PROFILE_DIR);
 	if (stat(RUN_FIREJAIL_X11_DIR, &s) == 0)
 		disable_file(BLACKLIST_FILE, RUN_FIREJAIL_X11_DIR);
 }
@@ -725,6 +726,12 @@ static void disable_config(void) {
 // top level directories could be links, run no after-mount checks
 void fs_basic_fs(void) {
 	uid_t uid = getuid();
+
+	// mount a new proc filesystem
+	if (arg_debug)
+		printf("Mounting /proc filesystem representing the PID namespace\n");
+	if (mount("proc", "/proc", "proc", MS_NOSUID | MS_NOEXEC | MS_NODEV | MS_REC, NULL) < 0)
+		errExit("mounting /proc");
 
 	if (arg_debug)
 		printf("Basic read-only filesystem:\n");
@@ -1085,6 +1092,12 @@ void fs_overlayfs(void) {
 	if (chroot(oroot) == -1)
 		errExit("chroot");
 
+	// mount a new proc filesystem
+	if (arg_debug)
+		printf("Mounting /proc filesystem representing the PID namespace\n");
+	if (mount("proc", "/proc", "proc", MS_NOSUID | MS_NOEXEC | MS_NODEV | MS_REC, NULL) < 0)
+		errExit("mounting /proc");
+
 	// update /var directory in order to support multiple sandboxes running on the same root directory
 //	if (!arg_private_dev)
 //		fs_dev_shm();
@@ -1115,294 +1128,6 @@ void fs_overlayfs(void) {
 }
 #endif
 
-
-#ifdef HAVE_CHROOT
-// exit if error
-void fs_check_chroot_dir(const char *rootdir) {
-	EUID_ASSERT();
-	assert(rootdir);
-	char *dir = EMPTY_STRING;
-	struct stat s;
-
-	char *overlay;
-	if (asprintf(&overlay, "%s/.firejail", cfg.homedir) == -1)
-		errExit("asprintf");
-	if (strncmp(rootdir, overlay, strlen(overlay)) == 0) {
-		fprintf(stderr, "Error: invalid chroot directory: no directories in %s are allowed\n", overlay);
-		exit(1);
-	}
-	free(overlay);
-
-	// fails if there is any symlink or if rootdir is not a directory
-	int parentfd = safe_fd(rootdir, O_PATH|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);
-	if (parentfd == -1) {
-		fprintf(stderr, "Error: invalid chroot directory %s\n", rootdir);
-		exit(1);
-	}
-	// rootdir has to be owned by root and is not allowed to be generally writable,
-	// this also excludes /tmp, /var/tmp and such
-	if (fstat(parentfd, &s) == -1)
-		errExit("fstat");
-	if (s.st_uid != 0) {
-		fprintf(stderr, "Error: chroot directory should be owned by root\n");
-		exit(1);
-	}
-	if (((S_IWGRP|S_IWOTH) & s.st_mode) != 0) {
-		fprintf(stderr, "Error: only root user should be given write permission on chroot directory\n");
-		exit(1);
-	}
-
-	// check /dev
-	dir = "dev";
-	int fd = openat(parentfd, dir, O_PATH|O_CLOEXEC);
-	if (fd == -1)
-		goto error1;
-	if (fstat(fd, &s) == -1)
-		errExit("fstat");
-	if (!S_ISDIR(s.st_mode) || s.st_uid != 0)
-		goto error2;
-	close(fd);
-
-	// check /var/tmp
-	dir = "var/tmp";
-	fd = openat(parentfd, dir, O_PATH|O_CLOEXEC);
-	if (fd == -1)
-		goto error1;
-	if (fstat(fd, &s) == -1)
-		errExit("fstat");
-	if (!S_ISDIR(s.st_mode) || s.st_uid != 0)
-		goto error2;
-	close(fd);
-
-	// check /proc
-	dir = "proc";
-	fd = openat(parentfd, dir, O_PATH|O_CLOEXEC);
-	if (fd == -1)
-		goto error1;
-	if (fstat(fd, &s) == -1)
-		errExit("fstat");
-	if (!S_ISDIR(s.st_mode) || s.st_uid != 0)
-		goto error2;
-	close(fd);
-
-	// check /tmp
-	dir = "tmp";
-	fd = openat(parentfd, dir, O_PATH|O_CLOEXEC);
-	if (fd == -1)
-		goto error1;
-	if (fstat(fd, &s) == -1)
-		errExit("fstat");
-	if (!S_ISDIR(s.st_mode) || s.st_uid != 0)
-		goto error2;
-	close(fd);
-
-	// check /etc
-	dir = "etc";
-	fd = openat(parentfd, dir, O_PATH|O_CLOEXEC);
-	if (fd == -1)
-		goto error1;
-	if (fstat(fd, &s) == -1)
-		errExit("fstat");
-	if (!S_ISDIR(s.st_mode) || s.st_uid != 0)
-		goto error2;
-	if (((S_IWGRP|S_IWOTH) & s.st_mode) != 0) {
-		fprintf(stderr, "Error: only root user should be given write permission on chroot /etc\n");
-		exit(1);
-	}
-	close(fd);
-
-	// there should be no checking on <chrootdir>/etc/resolv.conf
-	// the file is replaced with the real /etc/resolv.conf anyway
-#if 0
-	if (asprintf(&name, "%s/etc/resolv.conf", rootdir) == -1)
-		errExit("asprintf");
-	if (stat(name, &s) == 0) {
-		if (s.st_uid != 0) {
-			fprintf(stderr, "Error: chroot /etc/resolv.conf should be owned by root\n");
-			exit(1);
-		}
-	}
-	else {
-		fprintf(stderr, "Error: chroot /etc/resolv.conf not found\n");
-		exit(1);
-	}
-	// on Arch /etc/resolv.conf could be a symlink to /run/systemd/resolve/resolv.conf
-	// on Ubuntu 17.04 /etc/resolv.conf could be a symlink to /run/resolveconf/resolv.conf
-	if (is_link(name)) {
-		// check the link points in chroot
-		char *rname = realpath(name, NULL);
-		if (!rname || strncmp(rname, rootdir, strlen(rootdir)) != 0) {
-			fprintf(stderr, "Error: chroot /etc/resolv.conf is pointing outside chroot\n");
-			exit(1);
-		}
-	}
-	free(name);
-#endif
-
-	// check x11 socket directory
-	if (getenv("FIREJAIL_X11")) {
-		dir = "tmp/.X11-unix";
-		fd = openat(parentfd, dir, O_PATH|O_CLOEXEC);
-		if (fd == -1)
-			goto error1;
-		if (fstat(fd, &s) == -1)
-			errExit("fstat");
-		if (!S_ISDIR(s.st_mode) || s.st_uid != 0)
-			goto error2;
-		close(fd);
-	}
-
-	close(parentfd);
-	return;
-
-error1:
-	if (errno == ENOENT)
-		fprintf(stderr, "Error: cannot find /%s in chroot directory\n", dir);
-	else {
-		perror("open");
-		fprintf(stderr, "Error: cannot open /%s in chroot directory\n", dir);
-	}
-	exit(1);
-error2:
-	fprintf(stderr, "Error: chroot /%s should be a directory owned by root\n", dir);
-	exit(1);
-}
-
-// chroot into an existing directory; mount exiting /dev and update /etc/resolv.conf
-void fs_chroot(const char *rootdir) {
-	assert(rootdir);
-
-	// mount-bind a /dev in rootdir
-	char *newdev;
-	if (asprintf(&newdev, "%s/dev", rootdir) == -1)
-		errExit("asprintf");
-	if (arg_debug)
-		printf("Mounting /dev on %s\n", newdev);
-	if (mount("/dev", newdev, NULL, MS_BIND|MS_REC, NULL) < 0)
-		errExit("mounting /dev");
-	free(newdev);
-
-	// x11
-	if (getenv("FIREJAIL_X11")) {
-		char *newx11;
-		if (asprintf(&newx11, "%s/tmp/.X11-unix", rootdir) == -1)
-			errExit("asprintf");
-		if (arg_debug)
-			printf("Mounting /tmp/.X11-unix on %s\n", newx11);
-		if (mount("/tmp/.X11-unix", newx11, NULL, MS_BIND|MS_REC, NULL) < 0)
-			errExit("mounting /tmp/.X11-unix");
-		free(newx11);
-	}
-
-	// some older distros don't have a /run directory
-	// create one by default
-	char *rundir;
-	if (asprintf(&rundir, "%s/run", rootdir) == -1)
-		errExit("asprintf");
-	struct stat s;
-	if (lstat(rundir, &s) == 0) {
-		if (S_ISLNK(s.st_mode)) {
-			fprintf(stderr, "Error: chroot /run is a symbolic link\n");
-			exit(1);
-		}
-		if (!S_ISDIR(s.st_mode) || s.st_uid != 0) {
-			fprintf(stderr, "Error: chroot /run should be a directory owned by root\n");
-			exit(1);
-		}
-		if (((S_IWGRP|S_IWOTH) & s.st_mode) != 0) {
-			fprintf(stderr, "Error: only root user should be given write permission on chroot /run\n");
-			exit(1);
-		}
-	}
-	else {
-		// several sandboxes could race to create /run
-		if (mkdir(rundir, 0755) == -1 && errno != EEXIST)
-			errExit("mkdir");
-		ASSERT_PERMS(rundir, 0, 0, 0755);
-	}
-	free(rundir);
-
-	// create /run/firejail directory in chroot
-	if (asprintf(&rundir, "%s/run/firejail", rootdir) == -1)
-		errExit("asprintf");
-	if (mkdir(rundir, 0755) == -1 && errno != EEXIST)
-		errExit("mkdir");
-	ASSERT_PERMS(rundir, 0, 0, 0755);
-	free(rundir);
-
-	// create /run/firejail/lib directory in chroot and mount it
-	if (asprintf(&rundir, "%s%s", rootdir, RUN_FIREJAIL_LIB_DIR) == -1)
-		errExit("asprintf");
-	if (mkdir(rundir, 0755) == -1 && errno != EEXIST)
-		errExit("mkdir");
-	ASSERT_PERMS(rundir, 0, 0, 0755);
-	if (mount(RUN_FIREJAIL_LIB_DIR, rundir, NULL, MS_BIND|MS_REC, NULL) < 0)
-		errExit("mount bind");
-	free(rundir);
-
-	// create /run/firejail/mnt directory in chroot and mount the current one
-	if (asprintf(&rundir, "%s%s", rootdir, RUN_MNT_DIR) == -1)
-		errExit("asprintf");
-	if (mkdir(rundir, 0755) == -1 && errno != EEXIST)
-		errExit("mkdir");
-	ASSERT_PERMS(rundir, 0, 0, 0755);
-	if (mount(RUN_MNT_DIR, rundir, NULL, MS_BIND|MS_REC, NULL) < 0)
-		errExit("mount bind");
-	free(rundir);
-
-	// copy /etc/resolv.conf in chroot directory
-	char *fname;
-	if (asprintf(&fname, "%s/etc/resolv.conf", rootdir) == -1)
-		errExit("asprintf");
-	if (arg_debug)
-		printf("Updating /etc/resolv.conf in %s\n", fname);
-	unlink(fname);
-	if (copy_file("/etc/resolv.conf", fname, 0, 0, 0644) == -1) // root needed
-		fwarning("/etc/resolv.conf not initialized\n");
-	free(fname);
-
-	// chroot into the new directory
-#ifdef HAVE_GCOV
-	__gcov_flush();
-#endif
-	// mount the chroot dir on top of /run/firejail/mnt/oroot in order to reuse the apparmor rules for overlay
-	// and chroot into this new directory
-	if (arg_debug)
-		printf("Chrooting into %s\n", rootdir);
-	char *oroot = RUN_OVERLAY_ROOT;
-	if (mkdir(oroot, 0755) == -1)
-		errExit("mkdir");
-	if (mount(rootdir, oroot, NULL, MS_BIND|MS_REC, NULL) < 0)
-		errExit("mounting rootdir oroot");
-	if (chroot(oroot) < 0)
-		errExit("chroot");
-
-	// create all other /run/firejail files and directories
-	preproc_build_firejail_dir();
-
-	// update /var directory in order to support multiple sandboxes running on the same root directory
-//		if (!arg_private_dev)
-//			fs_dev_shm();
-	fs_var_lock();
-	if (!arg_keep_var_tmp)
-	        fs_var_tmp();
-	if (!arg_writable_var_log)
-		fs_var_log();
-
-	fs_var_lib();
-	fs_var_cache();
-	fs_var_utmp();
-	fs_machineid();
-
-	// don't leak user information
-	restrict_users();
-
-	// when starting as root, firejail config is not disabled;
-	if (getuid() != 0)
-		disable_config();
-}
-#endif
-
 // this function is called from sandbox.c before blacklist/whitelist functions
 void fs_private_tmp(void) {
 	// check XAUTHORITY file, KDE keeps it under /tmp
@@ -1413,6 +1138,7 @@ void fs_private_tmp(void) {
 			char *cmd;
 			if (asprintf(&cmd, "whitelist %s", rp) == -1)
 				errExit("asprintf");
+			profile_check_line(cmd, 0, NULL);
 			profile_add(cmd); // profile_add does not duplicate the string
 		}
 		if (rp)
@@ -1441,6 +1167,7 @@ void fs_private_tmp(void) {
 			char *cmd;
 			if (asprintf(&cmd, "whitelist /tmp/%s", entry->d_name) == -1)
 				errExit("asprintf");
+			profile_check_line(cmd, 0, NULL);
 			profile_add(cmd); // profile_add does not duplicate the string
 		}
 	}

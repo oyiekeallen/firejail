@@ -7,6 +7,9 @@ include tar.local
 # Persistent global definitions
 include globals.local
 
+# Arch Linux (based distributions) need access to /var/lib/pacman. As we drop all capabilities this is automatically read-only.
+noblacklist /var/lib/pacman
+
 include disable-common.inc
 include disable-devel.inc
 include disable-exec.inc
@@ -37,7 +40,7 @@ tracelog
 x11 none
 
 # support compressed archives
-private-bin bash,bzip2,compress,gtar,gzip,lbzip2,lzip,lzma,lzop,sh,tar,xz
+private-bin bash,bzip2,compress,firejail,gtar,gzip,lbzip2,lzip,lzma,lzop,sh,tar,xz
 private-cache
 private-dev
 private-etc alternatives,group,localtime,passwd

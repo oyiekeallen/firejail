@@ -17,6 +17,7 @@ include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-xdg.inc
 
+include whitelist-usr-share-common.inc
 include whitelist-var-common.inc
 
 apparmor
@@ -42,4 +43,4 @@ private-dev
 private-etc alternatives,ca-certificates,crypto-policies,fonts,group,machine-id,passwd,pki,ssl
 private-tmp
 
-memory-deny-write-execute
+#memory-deny-write-execute - breaks on Arch (see issue #1803)

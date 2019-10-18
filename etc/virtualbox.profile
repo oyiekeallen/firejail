@@ -26,7 +26,7 @@ whitelist ${DOWNLOADS}
 include whitelist-common.inc
 include whitelist-var-common.inc
 
-caps.drop all
+caps.keep net_raw,sys_admin,sys_nice
 netfilter
 nodvd
 notv

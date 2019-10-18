@@ -12,6 +12,7 @@ noblacklist ${DOCUMENTS}
 
 include disable-common.inc
 include disable-devel.inc
+include disable-exec.inc
 include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
@@ -28,9 +29,11 @@ noroot
 nosound
 notv
 nou2f
+novideo
 protocol unix
 seccomp
 shell none
+tracelog
 
 private-bin zathura
 private-cache
@@ -38,5 +41,8 @@ private-dev
 private-etc alternatives,fonts,machine-id
 private-tmp
 
-read-only ${HOME}/
-read-write ${HOME}/.local/share/zathura/
+mkdir ${HOME}/.config/zathura
+mkdir ${HOME}/.local/share/zathura
+read-only ${HOME}
+read-write ${HOME}/.config/zathura
+read-write ${HOME}/.local/share/zathura

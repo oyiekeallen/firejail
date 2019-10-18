@@ -1,6 +1,7 @@
 # Firejail profile for nano
 # Description: nano is an easy text editor for the terminal
 # This file is overwritten after every install/update
+quiet
 # Persistent local customizations
 include nano.local
 # Persistent global definitions
@@ -35,6 +36,7 @@ protocol unix
 seccomp
 shell none
 tracelog
+x11 none
 
 # disable-mnt
 private-bin nano,rnano

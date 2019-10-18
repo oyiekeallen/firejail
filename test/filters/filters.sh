@@ -5,6 +5,7 @@
 
 export MALLOC_CHECK_=3
 export MALLOC_PERTURB_=$(($RANDOM % 255 + 1))
+export LC_ALL=C
 
 if [ -f /etc/debian_version ]; then
 	libdir=$(dirname "$(dpkg -L firejail | grep fseccomp)")
@@ -109,6 +110,9 @@ echo "TESTING: seccomp chmod profile - seccomp lists (test/filters/seccomp-chmod
 
 echo "TESTING: seccomp empty (test/filters/seccomp-empty.exp)"
 ./seccomp-empty.exp
+
+echo "TESTING: seccomp numeric (test/filters/seccomp-numeric.exp)"
+./seccomp-numeric.exp
 
 if [ "$(uname -m)" = "x86_64" ]; then
         echo "TESTING: seccomp dual filter (test/filters/seccomp-dualfilter.exp)"

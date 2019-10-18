@@ -1,6 +1,7 @@
 # Firejail profile for Xvfb
 # Description: Virtual Framebuffer 'fake' X server
 # This file is overwritten after every install/update
+quiet
 # Persistent local customizations
 include Xvfb.local
 # Persistent global definitions
@@ -30,6 +31,7 @@ nonewprivs
 nosound
 notv
 nou2f
+novideo
 protocol unix
 seccomp
 shell none

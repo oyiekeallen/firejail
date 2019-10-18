@@ -8,6 +8,7 @@ include mpv.local
 include globals.local
 
 noblacklist ${HOME}/.config/mpv
+noblacklist ${HOME}/.config/youtube-dl
 noblacklist ${HOME}/.netrc
 
 # Allow python (blacklisted by disable-interpreters.inc)
@@ -15,6 +16,7 @@ include allow-python2.inc
 include allow-python3.inc
 
 noblacklist ${MUSIC}
+noblacklist ${PICTURES}
 noblacklist ${VIDEOS}
 
 include disable-common.inc
@@ -25,6 +27,7 @@ include disable-passwdmgr.inc
 include disable-programs.inc
 include disable-xdg.inc
 
+include whitelist-usr-share-common.inc
 include whitelist-var-common.inc
 
 apparmor
@@ -42,5 +45,6 @@ shell none
 tracelog
 
 private-bin env,mpv,python*,youtube-dl
-private-cache
+# Causes slow OSD, see #2838
+#private-cache
 private-dev

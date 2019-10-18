@@ -6,15 +6,12 @@ include gnome-builder.local
 # Persistent global definitions
 include globals.local
 
-noblacklist ${HOME}/.cargo/config
-noblacklist ${HOME}/.cargo/registry
-noblacklist ${HOME}/.config/git
-noblacklist ${HOME}/.gitconfig
-noblacklist ${HOME}/.git-credentials
-noblacklist ${HOME}/.python-history
-noblacklist ${HOME}/.python_history
-noblacklist ${HOME}/.pythonhist
-noblacklist ${HOME}/.pythonrc.py
+noblacklist ${HOME}/.cache/gnome-builder
+noblacklist ${HOME}/.config/gnome-builder
+noblacklist ${HOME}/.local/share/gnome-builder
+
+# Allows files commonly used by IDEs
+include allow-common-devel.inc
 
 include disable-common.inc
 include disable-passwdmgr.inc

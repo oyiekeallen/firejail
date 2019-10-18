@@ -147,6 +147,10 @@ static int check_nodbus(void) {
 	return arg_nodbus != 0;
 }
 
+static int check_x11(void) {
+	return (arg_x11_block || arg_x11_xorg || getenv("FIREJAIL_X11"));
+}
+
 static int check_disable_u2f(void) {
 	return checkcfg(CFG_BROWSER_DISABLE_U2F) != 0;
 }
@@ -158,6 +162,7 @@ static int check_allow_drm(void) {
 Cond conditionals[] = {
 	{"HAS_APPIMAGE", check_appimage},
 	{"HAS_NODBUS", check_nodbus},
+	{"HAS_X11", check_x11},
 	{"BROWSER_DISABLE_U2F", check_disable_u2f},
 	{"BROWSER_ALLOW_DRM", check_allow_drm},
 	{ NULL, NULL }
@@ -938,6 +943,11 @@ int profile_check_line(char *ptr, int lineno, const char *fname) {
 		cfg.home_private = ptr + 8;
 		fs_check_private_dir();
 		arg_private = 1;
+		return 0;
+	}
+
+	if (strcmp(ptr, "allow-debuggers") == 0) {
+		arg_allow_debuggers = 1;
 		return 0;
 	}
 

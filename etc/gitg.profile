@@ -19,9 +19,12 @@ include disable-interpreters.inc
 include disable-passwdmgr.inc
 include disable-programs.inc
 
+whitelist /usr/share/gitg
+include whitelist-usr-share-common.inc
 include whitelist-var-common.inc
 
 caps.drop all
+netfilter
 no3d
 nodvd
 nogroups
@@ -34,11 +37,9 @@ novideo
 protocol unix,inet,inet6
 seccomp
 shell none
+tracelog
 
 private-bin git,gitg,ssh
 private-cache
 private-dev
 private-tmp
-
-# mdwe breaks diff in older versions
-#memory-deny-write-execute
