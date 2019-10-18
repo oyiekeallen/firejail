@@ -30,6 +30,7 @@ include whitelist-common.inc
 include whitelist-var-common.inc
 
 apparmor
+
 caps.drop all
 # machine-id breaks pulse audio; it should work fine in setups where sound is not required.
 #machine-id
@@ -40,7 +41,9 @@ nodbus
 nodvd
 nogroups
 nonewprivs
+
 # noroot breaks GTK_USE_PORTAL=1 usage, see https://github.com/netblue30/firejail/issues/2506.
+
 noroot
 notv
 ?BROWSER_DISABLE_U2F: nou2f

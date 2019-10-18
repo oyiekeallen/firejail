@@ -22,3 +22,10 @@ seccomp
 
 # Redirect
 include firefox-common.profile
+
+
+
+private-srv
+private-opt
+private-cache
+private-home 
